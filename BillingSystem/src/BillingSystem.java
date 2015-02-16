@@ -27,6 +27,8 @@ public class BillingSystem {
 
     private static final long TODAY = System.currentTimeMillis();
 
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
     private static final String DEFAULT_ERR = "Invalid entry.";
 
     private static final String CONT_MESSAGE = "Hit return to continue.";
@@ -52,7 +54,7 @@ public class BillingSystem {
             "╟───╫───────────────────────────────────────────────────╢\n" +
             "║ 5 ║ Customer search (or view all customers)           ║\n" +
             "╟───╫───────────────────────────────────────────────────╢\n" +
-            "║ 6 ║ Manage bookings                                   ║\n" +
+            "║ 6 ║ Remove booking                                    ║\n" +
             "╟───╫───────────────────────────────────────────────────╢\n" +
             "║ 7 ║ Manage customers                                  ║\n" +
             "╟───╫───────────────────────────────────────────────────╢\n" +
@@ -150,6 +152,7 @@ public class BillingSystem {
                 CustomerLookupByName();
                 break;
             case 6:
+                RemoveBooking();
                 break;
             case 7:
                 break;
@@ -168,6 +171,7 @@ public class BillingSystem {
      */
     public void AddNewBooking(int CustomerID, long CheckInDate, long CheckOutDate) {
         IndividualBooking b = new IndividualBooking(++BookingIDCount, CustomerID, CheckInDate, CheckOutDate);
+        CustomerLookupByID(CustomerID).AddBooking(b);
         AllBookings.put(b.GetBookingID(), b);
     }
 
@@ -179,6 +183,7 @@ public class BillingSystem {
      */
     public void AddNewBooking(String CompanyName, int CustomerID, long CheckInDate, long CheckOutDate) {
         CorporateBooking b = new CorporateBooking(++BookingIDCount, CompanyName, CustomerID, CheckInDate, CheckOutDate);
+        CustomerLookupByID(CustomerID).AddBooking(b);
         AllBookings.put(b.GetBookingID(), b);
     }
 
@@ -190,6 +195,7 @@ public class BillingSystem {
      */
     public void AddNewBooking(int CustomerID, int GroupSize, long CheckInDate, long CheckOutDate) {
         GroupBooking b = new GroupBooking(++BookingIDCount, CustomerID, GroupSize, CheckInDate, CheckOutDate);
+        CustomerLookupByID(CustomerID).AddBooking(b);
         AllBookings.put(b.GetBookingID(), b);
     }
 
@@ -302,7 +308,28 @@ public class BillingSystem {
      * @param BookingID
      */
     public void RemoveBooking(int BookingID) {
+        Booking b = BookingLookupByID(BookingID);
+        CustomerLookupByID(b.GetCustomerID()).RemoveBooking(b);
         AllBookings.remove(BookingID);
+    }
+
+    public void RemoveBooking() {
+        String searchName = getInput("Enter customer name: ");
+        ArrayList<Customer> results = CustomerLookupByName(searchName);
+        if (results.size()==0) {
+            System.out.println(PROMPT + "No customers found. " + CONT_MESSAGE);
+            new Scanner(System.in).nextLine();
+        } else {
+            for (Customer c: results) {
+                System.out.println(PROMPT + "Bookings for " + c.GetCustomerID() + ": " + c.GetCustomerName());
+                for (Booking b: c.GetBookings()) {
+                    System.out.println(LINE_START + b.GetBookingID() + " : " +
+                        sdf.format(new Date(b.GetCheckInDate())) + "-" + sdf.format(new Date(b.GetCheckOutDate())));
+                }
+            }
+            int id = getIntInput(BookingIDCount+1, "Enter booking ID to cancel it: ", "Invalid booking ID.");
+            RemoveBooking(id);
+        }
     }
 
     /**
@@ -361,7 +388,7 @@ public class BillingSystem {
             System.out.println(PROMPT + "No matches found." + CONT_MESSAGE);
             new Scanner(System.in).nextLine();
         } else {
-            System.out.println(PROMPT + "ID" + " - " + "Customer");
+            System.out.println(PROMPT + "ID" + "-" + "Customer");
             for (Customer c: results) {
                 System.out.println(LINE_START + String.format("%02d", c.GetCustomerID()) + " : " + c.GetCustomerName());
             }
@@ -384,13 +411,13 @@ public class BillingSystem {
 
     public void getAllBookings() {
         clearConsole();
-        if (BookingIDCount==0) {
+        if (AllBookings.size()==0) {
             System.out.println(PROMPT + "No bookings in the system.");
             new Scanner(System.in).nextLine();
         } else {
             System.out.println(PROMPT + "ID : Customer : Dates");
-            for (int bc = 1; bc <= BookingIDCount; bc++) {
-                Booking b = AllBookings.get(bc);
+            for (Map.Entry<Integer, Booking> bEntry: AllBookings.entrySet()) {
+                Booking b = bEntry.getValue();
                 String name = CustomerLookupByID(b.GetCustomerID()).GetCustomerName();
                 System.out.println(LINE_START + String.format("%03d", b.GetBookingID()) + " : " +
                         name  + " : " +
@@ -482,7 +509,6 @@ public class BillingSystem {
     }
 
     private String dateFormat(long millis) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         return sdf.format(new Date(millis));
     }
 }

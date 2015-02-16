@@ -105,6 +105,13 @@ public class Customer {
     /**
      *
      */
+    public void RemoveBooking(Booking removeBooking) {
+        CustomerBookings.remove(removeBooking);
+    }
+
+    /**
+     *
+     */
     public ArrayList<Booking> GetBookings() {
         return CustomerBookings;
     }
