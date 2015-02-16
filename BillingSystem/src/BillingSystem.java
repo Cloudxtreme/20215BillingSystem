@@ -43,27 +43,27 @@ public class BillingSystem {
     //
     private static final String MENU_OPTIONS = "╔════════════════╗\n" +
             "║ Billing System ║\n" +
-            "╠═══╦════════════╩══════════════════════════════════════╗\n" +
-            "║ 1 ║ Add new customer                                  ║\n" +
-            "╟───╫───────────────────────────────────────────────────╢\n" +
-            "║ 2 ║ Create booking for new customer                   ║\n" +
-            "╟───╫───────────────────────────────────────────────────╢\n" +
-            "║ 3 ║ Create booking for existing customer              ║\n" +
-            "╟───╫───────────────────────────────────────────────────╢\n" +
-            "║ 4 ║ Booking lookup (or view all bookings)             ║\n" +
-            "╟───╫───────────────────────────────────────────────────╢\n" +
-            "║ 5 ║ Customer search (or view all customers)           ║\n" +
-            "╟───╫───────────────────────────────────────────────────╢\n" +
-            "║ 6 ║ Remove booking                                    ║\n" +
-            "╟───╫───────────────────────────────────────────────────╢\n" +
-            "║ 7 ║ Manage customers                                  ║\n" +
-            "╟───╫───────────────────────────────────────────────────╢\n" +
-            "║ 8 ║ Generate bill                                     ║\n" +
-            "╟───╫───────────────────────────────────────────────────╢\n" +
-            "║ 9 ║ Quit                                              ║\n" +
-            "╚═══╩═══════════════════════════════════════════════════╝\n";
+            "╠═══╦════════════╩════════════════════════════════════════════════════════════╗\n" +
+            "║ 1 ║ Add new customer                                                        ║\n" +
+            "╟───╫─────────────────────────────────────────────────────────────────────────╢\n" +
+            "║ 2 ║ Create booking for new customer                                         ║\n" +
+            "╟───╫─────────────────────────────────────────────────────────────────────────╢\n" +
+            "║ 3 ║ Create booking for existing customer                                    ║\n" +
+            "╟───╫─────────────────────────────────────────────────────────────────────────╢\n" +
+            "║ 4 ║ Booking lookup (or view all bookings)                                   ║\n" +
+            "╟───╫─────────────────────────────────────────────────────────────────────────╢\n" +
+            "║ 5 ║ Customer search (or view all customers)                                 ║\n" +
+            "╟───╫─────────────────────────────────────────────────────────────────────────╢\n" +
+            "║ 6 ║ Remove booking                                                          ║\n" +
+            "╟───╫─────────────────────────────────────────────────────────────────────────╢\n" +
+            "║ 7 ║ Manage customers                                                        ║\n" +
+            "╟───╫─────────────────────────────────────────────────────────────────────────╢\n" +
+            "║ 8 ║ Generate bill                                                           ║\n" +
+            "╟───╫─────────────────────────────────────────────────────────────────────────╢\n" +
+            "║ 9 ║ Quit                                                                    ║\n" +
+            "╚═══╩═════════════════════════════════════════════════════════════════════════╝\n";
 
-    private static final String PROMPT = "╔╦══════════════════════════════════════════════════════╗\n" +
+    private static final String PROMPT = "╔╦════════════════════════════════════════════════════════════════════════════╗\n" +
             "║║ ";
 
     private static final String LINE_START = "║║ ";
@@ -202,18 +202,27 @@ public class BillingSystem {
     public void AddNewBooking() {
         String searchName = getInput("Enter customer name: ");
         ArrayList<Customer> results = CustomerLookupByName(searchName);
-        System.out.println(PROMPT + "Customer : ID");
         if (results.size()==0) {
             System.out.println(PROMPT + "No customers found. " + CONT_MESSAGE);
             new Scanner(System.in).nextLine();
         } else {
+            String[][] customerLines = new String[results.size()][];
+            int customerCount = 0;
             for (Customer c: results) {
-                System.out.println(LINE_START + c.GetCustomerName() + " : " + c.GetCustomerID());
+                String id = String.valueOf(c.GetCustomerID());
+                String name = c.GetCustomerName();
+                String postCode = c.GetCustomerPostCode();
+                String[] customerData = new String[]{id, name, postCode};
+                customerLines[customerCount++] = customerData;
             }
+            printTable(3, new String[]{"ID", "Customer", "Post Code"}, customerLines);
+            System.out.println(PROMPT + CONT_MESSAGE);
+            new Scanner(System.in).nextLine();
             int id = getIntInput(CustomerIDCount+1, "Enter customer ID to book: ", "Invalid customer ID.");
             AddNewBooking(id);
         }
     }
+
 
     public void AddNewBooking(int CustomerID) {
         long checkInDate = getDateInput("Enter check-in date dd/mm/yyyy: ");
@@ -254,8 +263,7 @@ public class BillingSystem {
                     return input;
                 }
             } catch (InputMismatchException e) {}
-            System.out.println(PROMPT + errorText);
-            System.out.println(PROMPT + CONT_MESSAGE);
+            System.out.println(PROMPT + errorText + " - " + CONT_MESSAGE);
             s.nextLine();
         }
     }
@@ -274,8 +282,7 @@ public class BillingSystem {
                 clearConsole();
                 return input;
             }
-            System.out.println(PROMPT + errorText);
-            System.out.println(PROMPT + CONT_MESSAGE);
+            System.out.println(PROMPT + errorText + " - " + CONT_MESSAGE);
             s.nextLine();
         }
     }
@@ -286,7 +293,6 @@ public class BillingSystem {
 
     public long getDateInput(String inputText, String errorText, long before, long after) {
         long input;
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         Scanner s = new Scanner(System.in);
         while (true) {
             System.out.print(PROMPT + inputText);
@@ -297,8 +303,7 @@ public class BillingSystem {
                     return input;
                 }
             } catch (ParseException e) {}
-            System.out.println(PROMPT + errorText);
-            System.out.println(PROMPT + CONT_MESSAGE);
+            System.out.println(PROMPT + errorText + " - " + CONT_MESSAGE);
             s.nextLine();
         }
     }
@@ -320,13 +325,24 @@ public class BillingSystem {
             System.out.println(PROMPT + "No customers found. " + CONT_MESSAGE);
             new Scanner(System.in).nextLine();
         } else {
+            int totalBookings = 0;
             for (Customer c: results) {
-                System.out.println(PROMPT + "Bookings for " + c.GetCustomerID() + ": " + c.GetCustomerName());
+                totalBookings += c.GetBookings().size();
+            }
+            String[][] bookingLines = new String[totalBookings][];
+            int bookingCount = 0;
+            for (Customer c: results) {
+                String name = c.GetCustomerName();
+                String postCode = c.GetCustomerPostCode();
                 for (Booking b: c.GetBookings()) {
-                    System.out.println(LINE_START + b.GetBookingID() + " : " +
-                        sdf.format(new Date(b.GetCheckInDate())) + "-" + sdf.format(new Date(b.GetCheckOutDate())));
+                    String bookingID = String.valueOf(b.GetBookingID());
+                    String checkIn = sdf.format(new Date(b.GetCheckInDate()));
+                    String checkOut = sdf.format(new Date(b.GetCheckOutDate()));
+                    String[] bookingData = new String[]{name, postCode, bookingID, checkIn, checkOut};
+                    bookingLines[bookingCount++] = bookingData;
                 }
             }
+            printTable(5, new String[]{"Customer", "Post Code", "Booking", "Check-In", "Check-Out"}, bookingLines);
             int id = getIntInput(BookingIDCount+1, "Enter booking ID to cancel it: ", "Invalid booking ID.");
             RemoveBooking(id);
         }
@@ -383,17 +399,24 @@ public class BillingSystem {
 
     public void CustomerLookupByName() {
         ArrayList<Customer> results = CustomerLookupByName(getInput("Name: "));
+        Scanner s = new Scanner(System.in);
         clearConsole();
         if (results.size()==0) {
             System.out.println(PROMPT + "No matches found." + CONT_MESSAGE);
-            new Scanner(System.in).nextLine();
+            s.nextLine();
         } else {
-            System.out.println(PROMPT + "ID" + "-" + "Customer");
+            String[][] customerLines = new String[results.size()][];
+            int customerCount = 0;
             for (Customer c: results) {
-                System.out.println(LINE_START + String.format("%02d", c.GetCustomerID()) + " : " + c.GetCustomerName());
+                String id = String.valueOf(c.GetCustomerID());
+                String name = c.GetCustomerName();
+                String postCode = c.GetCustomerPostCode();
+                String[] customerData = new String[]{id, name, postCode};
+                customerLines[customerCount++] = customerData;
             }
+            printTable(3, new String[]{"ID", "Customer", "Post Code"}, customerLines);
             System.out.println(PROMPT + CONT_MESSAGE);
-            new Scanner(System.in).nextLine();
+            s.nextLine();
         }
     }
 
@@ -415,18 +438,25 @@ public class BillingSystem {
             System.out.println(PROMPT + "No bookings in the system.");
             new Scanner(System.in).nextLine();
         } else {
-            System.out.println(PROMPT + "ID : Customer : Dates");
+            String[][] bookingLines = new String[AllBookings.size()][];
+            int bookingCount = 0;
             for (Map.Entry<Integer, Booking> bEntry: AllBookings.entrySet()) {
                 Booking b = bEntry.getValue();
+                String id = String.valueOf(b.GetBookingID());
                 String name = CustomerLookupByID(b.GetCustomerID()).GetCustomerName();
-                System.out.println(LINE_START + String.format("%03d", b.GetBookingID()) + " : " +
-                        name  + " : " +
-                        dateFormat(b.GetCheckInDate()) + " - " +
-                        dateFormat(b.GetCheckOutDate()));
+                String checkIn = dateFormat(b.GetCheckInDate());
+                String checkOut = dateFormat(b.GetCheckOutDate());
+                String[] bookingData = new String[]{id, name, checkIn, checkOut};
+                bookingLines[bookingCount++] = bookingData;
             }
+            printTable(4, new String[]{"ID", "Customer", "Check-In", "Check-Out"}, bookingLines);
             System.out.println(PROMPT + CONT_MESSAGE);
             new Scanner(System.in).nextLine();
         }
+    }
+
+    public static String padRight(String s, int n) {
+        return String.format("%1$-" + n + "s", s);
     }
 
     /**
@@ -439,6 +469,31 @@ public class BillingSystem {
             }
         }
         return null;
+    }
+
+    public void printTable(int cols, String[] headings, String[][] cells) {
+        int colSizes[] = new int[cols];
+        for (int i=0; i<cells[0].length; i++) {
+            colSizes[i] = headings[i].length();
+            for (int j=0; j<cells.length; j++) {
+                if (cells[j][i].length() > colSizes[i]) {
+                    colSizes[i] = cells[j][i].length();
+                }
+            }
+        }
+        System.out.print(PROMPT);
+        for (int i=0; i<headings.length; i++) {
+            System.out.print(padRight(headings[i], colSizes[i]+2));
+        }
+        System.out.println();
+        for (int j=0; j<cells.length; j++) {
+            System.out.print(LINE_START);
+            for (int i = 0; i < headings.length; i++) {
+                System.out.print(padRight(cells[j][i],colSizes[i]+2));
+            }
+            System.out.println();
+        }
+
     }
 
     public void populateSystemData() {
@@ -472,11 +527,11 @@ public class BillingSystem {
         sys.AddNewCustomer("Daphne Willis","05056 497556", "64 Noon Road, Newtown, Montgomeryshire" ,"MO1 2LC");
         sys.AddNewCustomer("Judith Reilly","08390 478150", "67 South Avenue, Broxburn, West Lothian", "I48 3MM");
 
-
-        for (int customerID=1; customerID <= CustomerIDCount; customerID++) {
+        for (int i=0; i<2*CustomerIDCount; i++) {
+            int customerID = r.nextInt(CustomerIDCount)+1;
             int bookingType = r.nextInt(3)+1;
             long checkIn, checkOut;
-            checkIn = dateGenerator();
+            checkIn = dateGenerate();
             checkOut = checkIn + randomStayLength();
             switch (bookingType) {
                 case 1:
@@ -492,7 +547,7 @@ public class BillingSystem {
         }
     }
 
-    private long dateGenerator() {
+    private long dateGenerate() {
         return TODAY + r.nextInt(262800000)*10 - 2628000000l;
     }
 
