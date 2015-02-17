@@ -65,7 +65,7 @@ public abstract class Booking {
     /**
      * 
      */
-    public abstract void GenerateBill();
+    public abstract ArrayList<String> GenerateBill();
     /**
      * 
      */

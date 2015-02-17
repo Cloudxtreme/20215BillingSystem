@@ -33,8 +33,9 @@ public class GroupBooking extends Booking {
         // TODO implement here
     }
 
-    public void GenerateBill() {
+    public ArrayList<String> GenerateBill() {
         this.BookingBill.CalculateBill();
+        return this.BookingBill.PrintBill();
     }
 
     /**

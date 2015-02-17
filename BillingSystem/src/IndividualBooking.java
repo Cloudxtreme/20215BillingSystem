@@ -15,8 +15,9 @@ public class IndividualBooking extends Booking {
         this.BookingBill = new Bill(this);
     }
 
-    public void GenerateBill() {
+    public ArrayList<String> GenerateBill() {
         this.BookingBill.CalculateBill();
+        return this.BookingBill.PrintBill();
     }
 
     public boolean isIndividualBooking() {

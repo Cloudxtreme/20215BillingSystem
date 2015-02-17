@@ -39,8 +39,9 @@ public class CorporateBooking extends Booking {
        return this.CompanyName;
     }
 
-    public void GenerateBill() {
+    public ArrayList<String> GenerateBill() {
         this.BookingBill.CalculateBill();
+        return this.BookingBill.PrintBill();
     }
 
     public boolean isIndividualBooking() {
