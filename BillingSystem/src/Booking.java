@@ -77,6 +77,9 @@ public abstract class Booking {
         return this.CustomerID;
     }
 
+    public abstract boolean isIndividualBooking();
+    public abstract boolean isGroupBooking();
+    public abstract boolean isCorporateBooking();
 
 
 }

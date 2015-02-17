@@ -43,4 +43,14 @@ public class CorporateBooking extends Booking {
         this.BookingBill.CalculateBill();
     }
 
+    public boolean isIndividualBooking() {
+        return false;
+    }
+    public boolean isGroupBooking() {
+        return false;
+    }
+    public boolean isCorporateBooking() {
+        return true;
+    }
+
 }

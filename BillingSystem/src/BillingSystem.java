@@ -129,8 +129,6 @@ public class BillingSystem {
         } catch (NoSuchElementException e) { // Scanner closed
             valid = false;
         }
-
-
     }
 
     public void menuSelection(int menuChoice) {
