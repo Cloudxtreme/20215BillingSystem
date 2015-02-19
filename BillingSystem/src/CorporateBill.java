@@ -29,7 +29,8 @@ public class CorporateBill extends Bill {
      */
     private int WeekendDays;
 
-
+    BigDecimal weekdayBill;
+    BigDecimal weekendBill;
 
     /**
      * 
@@ -39,18 +40,21 @@ public class CorporateBill extends Bill {
         Date checkIn = new Date(CheckInDate);
         Date checkOut = new Date(CheckOutDate);
         Calendar cal = new GregorianCalendar();
+        cal.setTime(new Date(CheckOutDate-CheckInDate));
+        int days = cal.get(Calendar.DAY_OF_YEAR);
         cal.setTime(checkIn);
-        do {
+        for (int i=1; i < days; i++) {
+            System.out.println(DaysStayed);
             DaysStayed++;
             int day = cal.get(Calendar.DAY_OF_WEEK);
-            if (day == Calendar.SATURDAY || day == Calendar.SUNDAY) {
+            if (day == 6 || day == 7) {
                 WeekendDays++;
             }
             cal.add(Calendar.DAY_OF_YEAR, 1);
-        }  while (cal.before(checkOut));
+        }
 
-        BigDecimal weekdayBill = STANDARD_RATE.multiply(new BigDecimal((DaysStayed - WeekendDays) * CORPORATE_MULTIPLIER));
-        BigDecimal weekendBill = STANDARD_RATE.multiply(new BigDecimal(WeekendDays * WEEKEND_MULTIPLIER));
+        weekdayBill = STANDARD_RATE.multiply(new BigDecimal((DaysStayed - WeekendDays) * (1-CORPORATE_MULTIPLIER))).setScale(2,BigDecimal.ROUND_UP);
+        weekendBill = STANDARD_RATE.multiply(new BigDecimal(WeekendDays * (1-WEEKEND_MULTIPLIER))).setScale(2,BigDecimal.ROUND_UP);
         TotalBill = weekdayBill.add(weekendBill);
         TotalBill.setScale(2,BigDecimal.ROUND_UP);
 
@@ -61,9 +65,10 @@ public class CorporateBill extends Bill {
         ArrayList<String> formattedBill = new ArrayList<String>();
         formattedBill.add("CORPORATE BILL");
         formattedBill.add(String.format("Booking reference: %d.", BillBooking.GetBookingID()));
-        formattedBill.add(String.format("Total nights: %d at £%s per night.", DaysStayed, STANDARD_RATE.toString()));
-        formattedBill.add(String.format("Payable: %s.", TotalBill.toString(), BillBooking));
-        //formattedBill.add(String.format("Billed to %s.", BillBooking.GetCustomer().GetCustomerName()));
+        formattedBill.add(String.format("Total nights: %d weekdays £%s per night and %d weekend days at £%s per night.",
+                (DaysStayed-WeekendDays), STANDARD_RATE.multiply(new BigDecimal(1 - CORPORATE_MULTIPLIER)).toString(),
+                WeekendDays, STANDARD_RATE.multiply(new BigDecimal(WEEKEND_MULTIPLIER))).toString());
+        formattedBill.add(String.format("Payable: £%s.", TotalBill.toString()));
         return formattedBill;
     }
 

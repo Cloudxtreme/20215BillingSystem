@@ -54,4 +54,8 @@ public class CorporateBooking extends Booking {
         return true;
     }
 
+    public int getGroupSize() {
+        return 1;
+    }
+
 }

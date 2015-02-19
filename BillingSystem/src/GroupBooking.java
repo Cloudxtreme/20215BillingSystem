@@ -41,7 +41,7 @@ public class GroupBooking extends Booking {
     /**
      * 
      */
-    public int GetGroupSize() {
+    public int getGroupSize() {
         return GroupSize;
     }
 

@@ -14,6 +14,7 @@ public class Bill {
      * 
      */
     public Bill(Booking BillBooking) {
+        this.BillBooking = BillBooking;
         this.CheckInDate = BillBooking.GetCheckInDate();
         this.CheckOutDate = BillBooking.GetCheckOutDate();
     }
@@ -40,7 +41,7 @@ public class Bill {
         formattedBill.add("INDIVIDUAL BILL");
         formattedBill.add(String.format("Booking reference: %d.", BillBooking.GetBookingID()));
         formattedBill.add(String.format("Total nights: %d at £%s per night.", DaysStayed, STANDARD_RATE.toString()));
-        formattedBill.add(String.format("Payable: %s.", TotalBill.toString()));
+        formattedBill.add(String.format("Payable: £%s.", TotalBill.toString()));
         //formattedBill.add(String.format("Billed to %s.", BillBooking.GetCustomer().GetCustomerName()));
         return formattedBill;
     }

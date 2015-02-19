@@ -13,6 +13,7 @@ public class GroupBill extends Bill {
      */
     public GroupBill(Booking BillBooking) {
         super(BillBooking);
+        this.GroupSize = BillBooking.getGroupSize();
     }
 
     /**
@@ -43,9 +44,8 @@ public class GroupBill extends Bill {
         formattedBill.add("GROUP BILL");
         formattedBill.add(String.format("Booking reference: %d.", BillBooking.GetBookingID()));
         formattedBill.add(String.format("Total nights: %d at £%s per night for %d guests.",
-                     DaysStayed, STANDARD_RATE.multiply(new BigDecimal(0.1 * GroupSize)).toString()));
-        formattedBill.add(String.format("Payable: %s.", TotalBill.toString(), GroupSize));
-        //formattedBill.add(String.format("Billed to %s.", BillBooking.GetCustomer().GetCustomerName()));
+                     DaysStayed, STANDARD_RATE.multiply(new BigDecimal(1.1 * GroupSize)).toString(), GroupSize));
+        formattedBill.add(String.format("Payable: £%s.", TotalBill.toString()));
         return formattedBill;
     }
 }

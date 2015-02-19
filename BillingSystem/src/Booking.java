@@ -81,5 +81,5 @@ public abstract class Booking {
     public abstract boolean isGroupBooking();
     public abstract boolean isCorporateBooking();
 
-
+    public abstract int getGroupSize();
 }
