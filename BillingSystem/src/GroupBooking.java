@@ -16,8 +16,8 @@ public class GroupBooking extends Booking {
      */
     public GroupBooking(int BookingID, int CustomerID, int GroupSize, long CheckInDate, long CheckOutDate) {
         super(BookingID, CustomerID, CheckInDate, CheckOutDate);
-        this.BookingBill = new GroupBill(this);
         this.GroupSize = GroupSize;
+        this.BookingBill = new GroupBill(this);
     }
 
     /**

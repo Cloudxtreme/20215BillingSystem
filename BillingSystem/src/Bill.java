@@ -19,7 +19,7 @@ public class Bill {
         this.CheckOutDate = BillBooking.GetCheckOutDate();
     }
 
-    protected static final BigDecimal STANDARD_RATE = new BigDecimal("100.00").setScale(2, BigDecimal.ROUND_UP);
+    protected static final BigDecimal STANDARD_RATE = new BigDecimal("100.00").setScale(2, BigDecimal.ROUND_CEILING);
     protected BigDecimal TotalBill;
     protected Booking BillBooking;
     protected long CheckInDate;
@@ -33,16 +33,16 @@ public class Bill {
     public void CalculateBill() {
         DaysStayed = (int)TimeUnit.MILLISECONDS.toDays(CheckOutDate - CheckInDate);
         TotalBill = STANDARD_RATE.multiply(new BigDecimal(DaysStayed));
-        TotalBill.setScale(2,BigDecimal.ROUND_UP);
+        TotalBill.setScale(2,BigDecimal.ROUND_CEILING);
     }
 
     public ArrayList<String> PrintBill() {
         ArrayList<String> formattedBill = new ArrayList<String>();
         formattedBill.add("INDIVIDUAL BILL");
-        formattedBill.add(String.format("Booking reference: %d.", BillBooking.GetBookingID()));
+        formattedBill.add(String.format("Customer ID: %d", BillBooking.GetCustomerID()));
+        formattedBill.add(String.format("Booking reference: %d", BillBooking.GetBookingID()));
         formattedBill.add(String.format("Total nights: %d at £%s per night.", DaysStayed, STANDARD_RATE.toString()));
-        formattedBill.add(String.format("Payable: £%s.", TotalBill.toString()));
-        //formattedBill.add(String.format("Billed to %s.", BillBooking.GetCustomer().GetCustomerName()));
+        formattedBill.add(String.format("Payable: £%s", TotalBill.toString()));
         return formattedBill;
     }
 }

@@ -1,6 +1,7 @@
 import java.util.*;
 import java.math.BigDecimal;
 import java.util.GregorianCalendar;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 
@@ -29,23 +30,25 @@ public class CorporateBill extends Bill {
      */
     private int WeekendDays;
 
+    private static final BigDecimal WEEKDAY_RATE = STANDARD_RATE.multiply(new BigDecimal(1 - CORPORATE_MULTIPLIER))
+            .setScale(2,BigDecimal.ROUND_CEILING);
+    private static final BigDecimal WEEKEND_RATE = STANDARD_RATE.multiply(new BigDecimal(1 - WEEKEND_MULTIPLIER))
+            .setScale(2,BigDecimal.ROUND_CEILING);
+
     BigDecimal weekdayBill;
     BigDecimal weekendBill;
+
 
     /**
      * 
      */
     @Override
     public void CalculateBill() {
-        Date checkIn = new Date(CheckInDate);
-        Date checkOut = new Date(CheckOutDate);
         Calendar cal = new GregorianCalendar();
-        cal.setTime(new Date(CheckOutDate-CheckInDate));
-        int days = cal.get(Calendar.DAY_OF_YEAR);
-        cal.setTime(checkIn);
-        for (int i=1; i < days; i++) {
-            System.out.println(DaysStayed);
-            DaysStayed++;
+        DaysStayed = (int) TimeUnit.MILLISECONDS.toDays(CheckOutDate - CheckInDate);
+
+        cal.setTime(new Date(CheckInDate));
+        for (int i=1; i < DaysStayed+1 ; i++) {
             int day = cal.get(Calendar.DAY_OF_WEEK);
             if (day == 6 || day == 7) {
                 WeekendDays++;
@@ -53,10 +56,12 @@ public class CorporateBill extends Bill {
             cal.add(Calendar.DAY_OF_YEAR, 1);
         }
 
-        weekdayBill = STANDARD_RATE.multiply(new BigDecimal((DaysStayed - WeekendDays) * (1-CORPORATE_MULTIPLIER))).setScale(2,BigDecimal.ROUND_UP);
-        weekendBill = STANDARD_RATE.multiply(new BigDecimal(WeekendDays * (1-WEEKEND_MULTIPLIER))).setScale(2,BigDecimal.ROUND_UP);
-        TotalBill = weekdayBill.add(weekendBill);
-        TotalBill.setScale(2,BigDecimal.ROUND_UP);
+        weekdayBill = WEEKDAY_RATE.multiply(new BigDecimal(DaysStayed - WeekendDays))
+                .setScale(2, BigDecimal.ROUND_CEILING);
+        weekendBill = WEEKEND_RATE.multiply(new BigDecimal(WeekendDays))
+                .setScale(2, BigDecimal.ROUND_CEILING);
+        TotalBill = weekdayBill.add(weekendBill)
+                .setScale(2, BigDecimal.ROUND_CEILING);
 
     }
 
@@ -64,11 +69,11 @@ public class CorporateBill extends Bill {
     public ArrayList<String> PrintBill() {
         ArrayList<String> formattedBill = new ArrayList<String>();
         formattedBill.add("CORPORATE BILL");
-        formattedBill.add(String.format("Booking reference: %d.", BillBooking.GetBookingID()));
-        formattedBill.add(String.format("Total nights: %d weekdays £%s per night and %d weekend days at £%s per night.",
-                (DaysStayed-WeekendDays), STANDARD_RATE.multiply(new BigDecimal(1 - CORPORATE_MULTIPLIER)).toString(),
-                WeekendDays, STANDARD_RATE.multiply(new BigDecimal(WEEKEND_MULTIPLIER))).toString());
-        formattedBill.add(String.format("Payable: £%s.", TotalBill.toString()));
+        formattedBill.add(String.format("Customer ID: %d", BillBooking.GetCustomerID()));
+        formattedBill.add(String.format("Booking reference: %d", BillBooking.GetBookingID()));
+        formattedBill.add(String.format("Total nights: %d weekday(s) at £%s per night. %d weekend day(s) at £%s.",
+                (DaysStayed - WeekendDays), WEEKDAY_RATE, WeekendDays, WEEKEND_RATE));
+        formattedBill.add(String.format("Payable: £%s", TotalBill.toString()));
         return formattedBill;
     }
 
