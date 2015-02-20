@@ -20,7 +20,7 @@ public final class BillingSystemUtils {
             "╟───╫─────────────────────────────────────────────────────────────────────────╢\n" +
             "║ 5 ║ Customer search (or view all customers)                                 ║\n" +
             "╟───╫─────────────────────────────────────────────────────────────────────────╢\n" +
-            "║ 6 ║ Remove booking                                                          ║\n" +
+            "║ 6 ║ Manage bookings                                                         ║\n" +
             "╟───╫─────────────────────────────────────────────────────────────────────────╢\n" +
             "║ 7 ║ Manage customers                                                        ║\n" +
             "╟───╫─────────────────────────────────────────────────────────────────────────╢\n" +
@@ -44,8 +44,8 @@ public final class BillingSystemUtils {
     public static final String DEFAULT_ERR = "Invalid entry.";
 
 
-    public static String padRight(String s, int n) {
-        return String.format("%1$-" + n + "s", s);
+    public static String padRight(String s, int column) {
+        return String.format("%1$-" + column + "s", s);
     }
 
     public static void printTable(String[] headings, String[][] cells) {

@@ -1,6 +1,5 @@
 import java.text.ParseException;
 import java.util.*;
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 
 
@@ -10,7 +9,7 @@ import java.text.SimpleDateFormat;
 public class BillingSystem {
 
     /**
-     * 
+     * Constructs a new instance of BillingSystem with no customers or bookings
      */
     public BillingSystem() {
         BookingIDCount = 0;
@@ -21,23 +20,24 @@ public class BillingSystem {
 
     // Instance variable for billing system
     private static BillingSystem sys = new BillingSystem();
-
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
-    private static Random r = new Random();
-
-    private static ArrayList<String> Companies = new ArrayList<String>();
-
     // Total number of past bookings
     private static int BookingIDCount;
     // Total number of past customers
     private static int CustomerIDCount;
-
     // Every booking in the system
     private HashMap<Integer, Booking> AllBookings;
     // Every customer in the system
     private HashMap<Integer, Customer> Customers;
+    // List of Companies for data generation
+    private static ArrayList<String> Companies = new ArrayList<String>();
+    // Instance of random for populating the data set
+    private static Random r = new Random();
+    // The date format accepted for I/O
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
 
+    /**
+     * Constructs a new instance of BillingSystem with no customers or bookings
+     */
     public static void main(String[] args) {
         sys.populateSystemData();
         while (true) {
@@ -45,20 +45,20 @@ public class BillingSystem {
         }
     }
 
+    /**
+     * Launches the main menu and waits for input
+     */
     public void mainMenu() {
         Scanner s = new Scanner(System.in);
         int menuChoice = 0;
         BillingSystemUtils.menu();
-        BillingSystemUtils.headingText("Menu choice: ");
-        try {
-            menuChoice = s.nextInt();
-            s.nextLine();
-            System.out.println();
-            menuSelection(menuChoice);
-        } catch (InputMismatchException e) {
-        } catch (NoSuchElementException e) {}
+        menuSelection(getIntInput(10, "Menu choice (1-9): ", "Invalid menu choice."));
     }
 
+    /**
+     * Performs system actions based on the main menu choice the user made
+     * @param menuChoice The validated integer menu selection (0-9)
+     */
     public void menuSelection(int menuChoice) {
         switch (menuChoice) {
             case 1:
@@ -69,7 +69,7 @@ public class BillingSystem {
                 AddNewBooking(CustomerLookupByID(CustomerIDCount).GetCustomerID());
                 break;
             case 3:
-                AddNewBooking();
+                SelectBookingCustomer();
                 break;
             case 4:
                 getAllBookings();
@@ -92,6 +92,7 @@ public class BillingSystem {
 
 
     /**
+     * Creates a new individual booking
      * @param CustomerID
      * @param CheckInDate 
      * @param CheckOutDate
@@ -103,6 +104,7 @@ public class BillingSystem {
     }
 
     /**
+     * Creates a new corporate booking
      * @param CompanyName
      * @param CustomerID
      * @param CheckInDate
@@ -115,6 +117,7 @@ public class BillingSystem {
     }
 
     /**
+     * Creates a new group booking
      * @param CustomerID
      * @param GroupSize
      * @param CheckInDate
@@ -126,7 +129,10 @@ public class BillingSystem {
         AllBookings.put(b.GetBookingID(), b);
     }
 
-    public void AddNewBooking() {
+    /**
+     * Gets a user selected customer ID to create a booking for that customer
+     */
+    public void SelectBookingCustomer() {
         ArrayList<Customer> results = CustomerLookupByName(getInput("Customer name: "));
         if (results.size()==0) {
             BillingSystemUtils.confirmContinue("No customers found.");
@@ -147,7 +153,10 @@ public class BillingSystem {
         }
     }
 
-
+    /**
+     * Gets user input to create a booking for a specified customer
+     * @param CustomerID
+     */
     public void AddNewBooking(int CustomerID) {
         long checkInDate = getDateInput("Enter check-in date dd/mm/yyyy: ");
         long checkOutDate = getDateInput("Enter check-out date dd/mm/yyyy: ",
@@ -174,10 +183,10 @@ public class BillingSystem {
         Booking currentBooking = AllBookings.get(BookingID);
         BillingSystemUtils.headingText("Current check-in date is " + dateFormat(currentBooking.GetCheckInDate()));
         System.out.println();
-        long checkInDate = getDateInput("Enter new check-in date dd/mm/yyyy: ");
+        long checkInDate = getDateInput("Enter new check-in date dd/mm/yy: ");
         BillingSystemUtils.headingText("Current check-out date is " + dateFormat(currentBooking.GetCheckOutDate()));
         System.out.println();
-        long checkOutDate = getDateInput("Enter new check-out date dd/mm/yyyy: ",
+        long checkOutDate = getDateInput("Enter new check-out date dd/mm/yy: ",
                 "Check-out must be a valid date after check-in",
                 Long.MAX_VALUE, checkInDate);
         currentBooking.EditCheckInDate(checkInDate);
@@ -291,7 +300,7 @@ public class BillingSystem {
                     String checkIn = sdf.format(new Date(b.GetCheckInDate()));
                     String checkOut = sdf.format(new Date(b.GetCheckOutDate()));
                     String bookingType = b.isGroupBooking()? "Group: "+ ((GroupBooking)b).getGroupSize() :
-                            b.isCorporateBooking()? "Corporate" : "Individual";
+                            b.isCorporateBooking()? "Corp: "+ ((CorporateBooking)b).GetCompanyName() : "Individual";
                     String[] bookingData = new String[]{name, postCode, bookingID, bookingType, checkIn, checkOut};
                     bookingLines[bookingCount++] = bookingData;
                 }
@@ -333,8 +342,8 @@ public class BillingSystem {
                     String bookingID = String.valueOf(b.GetBookingID());
                     String checkIn = sdf.format(new Date(b.GetCheckInDate()));
                     String checkOut = sdf.format(new Date(b.GetCheckOutDate()));
-                    String bookingType = b.isGroupBooking()? "Group: " + ((GroupBooking)b).getGroupSize() :
-                            b.isCorporateBooking()? "Corporate" : "Individual";
+                    String bookingType = b.isGroupBooking()? "Group: "+ ((GroupBooking)b).getGroupSize() :
+                            b.isCorporateBooking()? "Corp: "+ ((CorporateBooking)b).GetCompanyName() : "Individual";
                     String[] bookingData = new String[]{name, postCode, bookingID, bookingType, checkIn, checkOut};
                     bookingLines[bookingCount++] = bookingData;
                 }
@@ -452,7 +461,8 @@ public class BillingSystem {
                 String name = CustomerLookupByID(b.GetCustomerID()).GetCustomerName();
                 String checkIn = dateFormat(b.GetCheckInDate());
                 String checkOut = dateFormat(b.GetCheckOutDate());
-                String bookingType = b.isGroupBooking()? "Group: " + ((GroupBooking)b).getGroupSize() : b.isCorporateBooking()? "Corporate" : "Individual";
+                String bookingType = b.isGroupBooking()? "Group: "+ ((GroupBooking)b).getGroupSize() :
+                        b.isCorporateBooking()? "Corp: "+ ((CorporateBooking)b).GetCompanyName() : "Individual";
                 String[] bookingData = new String[]{id, name, bookingType, checkIn, checkOut};
                 bookingLines[bookingCount++] = bookingData;
             }
@@ -477,7 +487,7 @@ public class BillingSystem {
 
     public void populateSystemData() {
         sys.Companies.add("Starbucks");
-        sys.Companies.add("Costa Coffee");
+        sys.Companies.add("Costa");
         sys.Companies.add("Caffè Nero");
         sys.AddNewCustomer("Kiara Kirk","02678 001547", "7 Molestie St.,Jedburgh, Roxburghshire", "V7C 2NA");
         sys.AddNewCustomer("Milly Peck","09271 533863","5B Ante Av.,Portsmouth, Hampshire","W3 5QC");
