@@ -78,7 +78,7 @@ public class BillingSystem {
                 CustomerLookupByName();
                 break;
             case 6:
-                RemoveBooking();
+                ManageBooking();
                 break;
             case 7:
                 break;
@@ -169,6 +169,30 @@ public class BillingSystem {
                 break;
         }
     }
+
+    public void EditBooking(int BookingID) {
+        Booking currentBooking = AllBookings.get(BookingID);
+        BillingSystemUtils.headingText("Current check-in date is " + dateFormat(currentBooking.GetCheckInDate()));
+        long checkInDate = getDateInput("Enter new check-in date dd/mm/yyyy: ");
+        BillingSystemUtils.headingText("Current check-out date is " + dateFormat(currentBooking.GetCheckOutDate()));
+        long checkOutDate = getDateInput("Enter new check-out date dd/mm/yyyy: ",
+                "Check-out must be a valid date after check-in",
+                Long.MAX_VALUE, checkInDate);
+        currentBooking.EditCheckInDate(checkInDate);
+        currentBooking.EditCheckOutDate(checkOutDate);
+
+        if (currentBooking.isGroupBooking()) {
+            BillingSystemUtils.headingText("Current group size is: " + ((GroupBooking) currentBooking).getGroupSize());
+            int groupSize = getIntInput(6, "Enter new group size: ", "Invalid group size (max 5).");
+            ((GroupBooking) currentBooking).EditGroupSize(groupSize);
+        } else if (currentBooking.isCorporateBooking()) {
+            BillingSystemUtils.headingText("Current company name is: " + ((CorporateBooking)currentBooking).GetCompanyName());
+            String CompanyName = getInput("Enter company name: ");
+            ((CorporateBooking)currentBooking).EditCompanyName(CompanyName);
+        }
+    }
+
+
 
     private String dateFormat(long millis) {
         return sdf.format(new Date(millis));
@@ -261,7 +285,7 @@ public class BillingSystem {
                     String bookingID = String.valueOf(b.GetBookingID());
                     String checkIn = sdf.format(new Date(b.GetCheckInDate()));
                     String checkOut = sdf.format(new Date(b.GetCheckOutDate()));
-                    String bookingType = b.isGroupBooking()? "Group: "+ b.getGroupSize() :
+                    String bookingType = b.isGroupBooking()? "Group: "+ ((GroupBooking)b).getGroupSize() :
                             b.isCorporateBooking()? "Corporate" : "Individual";
                     String[] bookingData = new String[]{name, postCode, bookingID, bookingType, checkIn, checkOut};
                     bookingLines[bookingCount++] = bookingData;
@@ -286,7 +310,7 @@ public class BillingSystem {
         AllBookings.remove(BookingID);
     }
 
-    public void RemoveBooking() {
+    public void ManageBooking() {
         ArrayList<Customer> results = CustomerLookupByName(getInput("Customer name: "));
         if (results.size()==0) {
             BillingSystemUtils.confirmContinue("No customers found");
@@ -304,7 +328,7 @@ public class BillingSystem {
                     String bookingID = String.valueOf(b.GetBookingID());
                     String checkIn = sdf.format(new Date(b.GetCheckInDate()));
                     String checkOut = sdf.format(new Date(b.GetCheckOutDate()));
-                    String bookingType = b.isGroupBooking()? "Group: " + b.getGroupSize() :
+                    String bookingType = b.isGroupBooking()? "Group: " + ((GroupBooking)b).getGroupSize() :
                             b.isCorporateBooking()? "Corporate" : "Individual";
                     String[] bookingData = new String[]{name, postCode, bookingID, bookingType, checkIn, checkOut};
                     bookingLines[bookingCount++] = bookingData;
@@ -313,8 +337,16 @@ public class BillingSystem {
             if (bookingCount > 0) {
                 BillingSystemUtils.printTable(
                         new String[]{"Customer", "Post Code", "Booking", "Type", "Check-In", "Check-Out"}, bookingLines);
-                int id = getIntInput(BookingIDCount+1, "Enter booking ID to cancel it: ", "Invalid booking ID.");
-                RemoveBooking(id);
+                int id = getIntInput(BookingIDCount+1, "Enter booking ID to edit it: ", "Invalid booking ID.");
+                int editOrRemove = getIntInput(3, "Enter 1 to edit booking or 2 to remove.");
+                switch (editOrRemove) {
+                    case 1:
+                        EditBooking(id);
+                        break;
+                    case 2:
+                        RemoveBooking(id);
+                        break;
+                }
             }
         }
     }
@@ -384,7 +416,7 @@ public class BillingSystem {
                 String[] customerData = new String[]{id, name, postCode};
                 customerLines[customerCount++] = customerData;
             }
-            BillingSystemUtils.printTable(new String[]{"ID", "Customer", "Post Code"}, customerLines);
+            BillingSystemUtils.printTable(new String[]{"Customer ID", "Name", "Post Code"}, customerLines);
             BillingSystemUtils.confirmContinue();
         }
     }
@@ -415,7 +447,7 @@ public class BillingSystem {
                 String name = CustomerLookupByID(b.GetCustomerID()).GetCustomerName();
                 String checkIn = dateFormat(b.GetCheckInDate());
                 String checkOut = dateFormat(b.GetCheckOutDate());
-                String bookingType = b.isGroupBooking()? "Group: " + b.getGroupSize() : b.isCorporateBooking()? "Corporate" : "Individual";
+                String bookingType = b.isGroupBooking()? "Group: " + ((GroupBooking)b).getGroupSize() : b.isCorporateBooking()? "Corporate" : "Individual";
                 String[] bookingData = new String[]{id, name, bookingType, checkIn, checkOut};
                 bookingLines[bookingCount++] = bookingData;
             }

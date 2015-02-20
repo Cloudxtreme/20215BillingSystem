@@ -80,6 +80,4 @@ public abstract class Booking {
     public abstract boolean isIndividualBooking();
     public abstract boolean isGroupBooking();
     public abstract boolean isCorporateBooking();
-
-    public abstract int getGroupSize();
 }

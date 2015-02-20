@@ -30,8 +30,4 @@ public class IndividualBooking extends Booking {
         return false;
     }
 
-    public int getGroupSize() {
-        return 1;
-    }
-
 }

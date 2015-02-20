@@ -13,7 +13,7 @@ public class GroupBill extends Bill {
      */
     public GroupBill(Booking BillBooking) {
         super(BillBooking);
-        this.GroupSize = BillBooking.getGroupSize();
+        this.GroupSize = ((GroupBooking)BillBooking).getGroupSize();
         adjustedRate = STANDARD_RATE.multiply(new BigDecimal(1 + GROUP_MULTIPLIER * (GroupSize-1)))
                 .setScale(2, BigDecimal.ROUND_CEILING);;
     }
