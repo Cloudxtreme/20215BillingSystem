@@ -30,7 +30,7 @@ public class GroupBooking extends Booking {
      * @param GroupSize
      */
     public void EditGroupSize(int GroupSize) {
-        // TODO implement here
+        this.GroupSize = GroupSize;
     }
 
     public ArrayList<String> GenerateBill() {

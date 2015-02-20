@@ -173,8 +173,10 @@ public class BillingSystem {
     public void EditBooking(int BookingID) {
         Booking currentBooking = AllBookings.get(BookingID);
         BillingSystemUtils.headingText("Current check-in date is " + dateFormat(currentBooking.GetCheckInDate()));
+        System.out.println();
         long checkInDate = getDateInput("Enter new check-in date dd/mm/yyyy: ");
         BillingSystemUtils.headingText("Current check-out date is " + dateFormat(currentBooking.GetCheckOutDate()));
+        System.out.println();
         long checkOutDate = getDateInput("Enter new check-out date dd/mm/yyyy: ",
                 "Check-out must be a valid date after check-in",
                 Long.MAX_VALUE, checkInDate);
@@ -183,10 +185,12 @@ public class BillingSystem {
 
         if (currentBooking.isGroupBooking()) {
             BillingSystemUtils.headingText("Current group size is: " + ((GroupBooking) currentBooking).getGroupSize());
+            System.out.println();
             int groupSize = getIntInput(6, "Enter new group size: ", "Invalid group size (max 5).");
-            ((GroupBooking) currentBooking).EditGroupSize(groupSize);
+            ((GroupBooking)currentBooking).EditGroupSize(groupSize);
         } else if (currentBooking.isCorporateBooking()) {
             BillingSystemUtils.headingText("Current company name is: " + ((CorporateBooking)currentBooking).GetCompanyName());
+            System.out.println();
             String CompanyName = getInput("Enter company name: ");
             ((CorporateBooking)currentBooking).EditCompanyName(CompanyName);
         }
@@ -209,6 +213,7 @@ public class BillingSystem {
             BillingSystemUtils.headingText(inputText);
             try {
                 input = s.nextInt();
+                s.nextLine();
                 if (input < upperBound && input > 0) {
                     BillingSystemUtils.clearConsole();
                     return input;
@@ -338,7 +343,7 @@ public class BillingSystem {
                 BillingSystemUtils.printTable(
                         new String[]{"Customer", "Post Code", "Booking", "Type", "Check-In", "Check-Out"}, bookingLines);
                 int id = getIntInput(BookingIDCount+1, "Enter booking ID to edit it: ", "Invalid booking ID.");
-                int editOrRemove = getIntInput(3, "Enter 1 to edit booking or 2 to remove.");
+                int editOrRemove = getIntInput(3, "Enter 1 to edit booking or 2 to remove booking: ");
                 switch (editOrRemove) {
                     case 1:
                         EditBooking(id);
