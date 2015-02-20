@@ -45,9 +45,7 @@ public class GroupBooking extends Booking {
         return GroupSize;
     }
 
-    public boolean isIndividualBooking() {
-        return false;
-    }
+    public boolean isIndividualBooking() { return false; }
     public boolean isGroupBooking() {
         return true;
     }
