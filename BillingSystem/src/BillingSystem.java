@@ -158,8 +158,8 @@ public class BillingSystem {
      * @param CustomerID
      */
     public void AddNewBooking(int CustomerID) {
-        long checkInDate = getDateInput("Enter check-in date dd/mm/yyyy: ");
-        long checkOutDate = getDateInput("Enter check-out date dd/mm/yyyy: ",
+        long checkInDate = getDateInput("Enter check-in date dd/mm/yy: ");
+        long checkOutDate = getDateInput("Enter check-out date dd/mm/yy: ",
                 "Check-out must be a valid date after check-in",
                 Long.MAX_VALUE, checkInDate);
 
