@@ -73,6 +73,12 @@ public final class BillingSystemUtils {
         }
     }
 
+    public static void clearConsole() {
+        System.out.print(String.format("\033[2J"));
+        System.out.println(TITLE);
+
+    }
+
     public static void menu() {
         System.out.print(String.format("\033[2J"));
         System.out.println(MENU_OPTIONS);

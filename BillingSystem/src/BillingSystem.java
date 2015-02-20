@@ -15,9 +15,6 @@ public class BillingSystem {
     public BillingSystem() {
         BookingIDCount = 0;
         CustomerIDCount = 0;
-        CurrentIndividuals = 0;
-        CurrentCorporates = 0;
-        CurrentGroups = 0;
         AllBookings = new HashMap<Integer, Booking>();
         Customers = new HashMap<Integer, Customer>();
     }
@@ -25,38 +22,16 @@ public class BillingSystem {
     // Instance variable for billing system
     private static BillingSystem sys = new BillingSystem();
 
-
     private static final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
     private static Random r = new Random();
 
     private static ArrayList<String> Companies = new ArrayList<String>();
 
-
-    //
-
-
-    private static final String LINE_START = "║║ ";
-    private static Scanner getInput = new Scanner(System.in);
-
-    // Maximum individual bookings at any time
-    private static final int MAX_INDIVIDUALS = 20;
-    // Maximum corporate bookings at any time
-    private static final  int MAX_CORPORATES = 20;
-    // Maximum group bookings at any time
-    private static final int MAX_GROUPS = 10;
-
     // Total number of past bookings
     private static int BookingIDCount;
     // Total number of past customers
     private static int CustomerIDCount;
-
-    // Current number of individuals staying
-    private int CurrentIndividuals;
-    // Current number of corporate guests staying
-    private int CurrentCorporates;
-    // Current number of groups staying
-    private int CurrentGroups;
 
     // Every booking in the system
     private HashMap<Integer, Booking> AllBookings;
@@ -68,12 +43,6 @@ public class BillingSystem {
         while (true) {
             sys.mainMenu();
         }
-    }
-
-    public void clearConsole() {
-        System.out.print(String.format("\033[2J"));
-        System.out.println(BillingSystemUtils.TITLE);
-
     }
 
     public void mainMenu() {
@@ -158,8 +127,7 @@ public class BillingSystem {
     }
 
     public void AddNewBooking() {
-        String searchName = getInput("Enter customer name: ");
-        ArrayList<Customer> results = CustomerLookupByName(searchName);
+        ArrayList<Customer> results = CustomerLookupByName(getInput("Customer name: "));
         if (results.size()==0) {
             BillingSystemUtils.confirmContinue("No customers found.");
         } else {
@@ -202,6 +170,10 @@ public class BillingSystem {
         }
     }
 
+    private String dateFormat(long millis) {
+        return sdf.format(new Date(millis));
+    }
+
     public int getIntInput(int upperBound, String inputText) {
         return getIntInput(upperBound, inputText, BillingSystemUtils.DEFAULT_ERR);
     }
@@ -214,7 +186,7 @@ public class BillingSystem {
             try {
                 input = s.nextInt();
                 if (input < upperBound && input > 0) {
-                    clearConsole();
+                    BillingSystemUtils.clearConsole();
                     return input;
                 }
             } catch (InputMismatchException e) {}
@@ -233,7 +205,7 @@ public class BillingSystem {
             BillingSystemUtils.headingText(inputText);
             input = s.nextLine();
             if (input.length() > 0) {
-                clearConsole();
+                BillingSystemUtils.clearConsole();
                 return input;
             }
             BillingSystemUtils.confirmContinue(errorText);
@@ -252,7 +224,7 @@ public class BillingSystem {
             try {
                 input = sdf.parse(s.nextLine()).getTime();
                 if (input < before && input > after) {
-                    clearConsole();
+                    BillingSystemUtils.clearConsole();
                     return input;
                 }
             } catch (ParseException e) {}
@@ -272,8 +244,7 @@ public class BillingSystem {
     }
 
     public void GenerateBill() {
-        String searchName = getInput("Enter customer name: ");
-        ArrayList<Customer> results = CustomerLookupByName(searchName);
+        ArrayList<Customer> results = CustomerLookupByName(getInput("Customer name: "));
         if (results.size()==0) {
             BillingSystemUtils.confirmContinue("No customers found");
         } else {
@@ -290,13 +261,15 @@ public class BillingSystem {
                     String bookingID = String.valueOf(b.GetBookingID());
                     String checkIn = sdf.format(new Date(b.GetCheckInDate()));
                     String checkOut = sdf.format(new Date(b.GetCheckOutDate()));
-                    String bookingType = b.isGroupBooking()? "Group: " + b.getGroupSize() : b.isCorporateBooking()? "Corporate" : "Individual";
+                    String bookingType = b.isGroupBooking()? "Group: "+ b.getGroupSize() :
+                            b.isCorporateBooking()? "Corporate" : "Individual";
                     String[] bookingData = new String[]{name, postCode, bookingID, bookingType, checkIn, checkOut};
                     bookingLines[bookingCount++] = bookingData;
                 }
             }
             if (bookingCount > 0) {
-                BillingSystemUtils.printTable(new String[]{"Customer", "Post Code", "Booking", "Type", "Check-In", "Check-Out"}, bookingLines);
+                BillingSystemUtils.printTable(
+                        new String[]{"Customer", "Post Code", "Booking", "Type", "Check-In", "Check-Out"}, bookingLines);
                 int id = getIntInput(BookingIDCount+1, "Enter booking ID to generate bill: ", "Invalid booking ID.");
                 GenerateBill(id);
             }
@@ -314,8 +287,7 @@ public class BillingSystem {
     }
 
     public void RemoveBooking() {
-        String searchName = getInput("Enter customer name: ");
-        ArrayList<Customer> results = CustomerLookupByName(searchName);
+        ArrayList<Customer> results = CustomerLookupByName(getInput("Customer name: "));
         if (results.size()==0) {
             BillingSystemUtils.confirmContinue("No customers found");
         } else {
@@ -332,13 +304,15 @@ public class BillingSystem {
                     String bookingID = String.valueOf(b.GetBookingID());
                     String checkIn = sdf.format(new Date(b.GetCheckInDate()));
                     String checkOut = sdf.format(new Date(b.GetCheckOutDate()));
-                    String bookingType = b.isGroupBooking()? "Group: " + b.getGroupSize() : b.isCorporateBooking()? "Corporate" : "Individual";
+                    String bookingType = b.isGroupBooking()? "Group: " + b.getGroupSize() :
+                            b.isCorporateBooking()? "Corporate" : "Individual";
                     String[] bookingData = new String[]{name, postCode, bookingID, bookingType, checkIn, checkOut};
                     bookingLines[bookingCount++] = bookingData;
                 }
             }
             if (bookingCount > 0) {
-                BillingSystemUtils.printTable(new String[]{"Customer", "Post Code", "Booking", "Type", "Check-In", "Check-Out"}, bookingLines);
+                BillingSystemUtils.printTable(
+                        new String[]{"Customer", "Post Code", "Booking", "Type", "Check-In", "Check-Out"}, bookingLines);
                 int id = getIntInput(BookingIDCount+1, "Enter booking ID to cancel it: ", "Invalid booking ID.");
                 RemoveBooking(id);
             }
@@ -395,9 +369,9 @@ public class BillingSystem {
     }
 
     public void CustomerLookupByName() {
-        ArrayList<Customer> results = CustomerLookupByName(getInput("Name: "));
+        ArrayList<Customer> results = CustomerLookupByName(getInput("Customer name: "));
         Scanner s = new Scanner(System.in);
-        clearConsole();
+        BillingSystemUtils.clearConsole();
         if (results.size()==0) {
             BillingSystemUtils.confirmContinue("No customers found");
         } else {
@@ -428,7 +402,7 @@ public class BillingSystem {
     }
 
     public void getAllBookings() {
-        clearConsole();
+        BillingSystemUtils.clearConsole();
         if (AllBookings.size()==0) {
             BillingSystemUtils.headingText("No bookings in the system.");
             new Scanner(System.in).nextLine();
@@ -465,9 +439,9 @@ public class BillingSystem {
 
 
     public void populateSystemData() {
-        sys.Companies.add("Second Bridge");
-        sys.Companies.add("Weir Lounge");
-        sys.Companies.add("Zero Zero");
+        sys.Companies.add("Starbucks");
+        sys.Companies.add("Costa Coffee");
+        sys.Companies.add("Caffè Nero");
         sys.AddNewCustomer("Kiara Kirk","02678 001547", "7 Molestie St.,Jedburgh, Roxburghshire", "V7C 2NA");
         sys.AddNewCustomer("Milly Peck","09271 533863","5B Ante Av.,Portsmouth, Hampshire","W3 5QC");
         sys.AddNewCustomer("Adeline Avery","05991 642782","118 North St.,Portree, Inverness","QX1F 8FC");
@@ -481,7 +455,7 @@ public class BillingSystem {
         sys.AddNewCustomer("Tatiana Sears","03463 610913", "4 Hendrerit Av.,Tewkesbury, Gloucestershire" , "KX46 1NT");
         sys.AddNewCustomer("Rowan Wright","09519 543273", "34 Velvet Rd., Barrow-in-Furness,Lancashire", "S3 4NY");
         sys.AddNewCustomer("Craig Stanton","05795 566600","7D Eugene Ave, Llandrindod Wells, Radnorshire","I2 6NX");
-        sys.AddNewCustomer("Colton Mendoza", "03682 983662", "29 Feugiat St., Aylesbury, Buckinghamshire","RO1P 6QO");
+        sys.AddNewCustomer("Colton Maine", "03682 983662", "29 Feugiat St., Aylesbury, Buckinghamshire","RO1P 6QO");
         sys.AddNewCustomer("Abigail Petersen", "08199 208651", "80 Dolor St., Dundee, Angus","JL6 8EA");
         sys.AddNewCustomer("Kenneth Wilkinson" ,"04170 723460","6860 Risus. Rd., Trowbridge, Wiltshire","EL39 8RH");
         sys.AddNewCustomer("Dominique Pitts","09516 368779", "286 Alford Avenue, Leominster, Herefordshire","OU6C 4IY");
@@ -525,9 +499,5 @@ public class BillingSystem {
     }
     private String randomCompanyName() {
         return Companies.get(r.nextInt(Companies.size()));
-    }
-
-    private String dateFormat(long millis) {
-        return sdf.format(new Date(millis));
     }
 }
