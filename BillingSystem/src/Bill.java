@@ -6,12 +6,12 @@ import java.util.GregorianCalendar;
 
 
 /**
- * 
+ * Class for instantiating bill objects (requires a booking)
  */
 public class Bill {
 
     /**
-     * 
+     * Constructs a new instance of Bill from a Booking
      */
     public Bill(Booking BillBooking) {
         this.BillBooking = BillBooking;

@@ -3,12 +3,16 @@ import java.sql.Date;
 import java.math.BigDecimal;
 
 /**
- * 
+ * Class for instantiating individual booking objects
  */
 public class IndividualBooking extends Booking {
 
     /**
-     * 
+     * Constructs a new instance of IndividualBooking
+     * @param BookingID
+     * @param CustomerID
+     * @param CheckInDate
+     * @param CheckOutDate
      */
     public IndividualBooking(int BookingID, int CustomerID, long CheckInDate, long CheckOutDate) {
         super(BookingID, CustomerID, CheckInDate, CheckOutDate);
@@ -20,14 +24,10 @@ public class IndividualBooking extends Booking {
         return this.BookingBill.PrintBill();
     }
 
-    public boolean isIndividualBooking() {
-        return true;
-    }
     public boolean isGroupBooking() {
         return false;
     }
     public boolean isCorporateBooking() {
         return false;
     }
-
 }

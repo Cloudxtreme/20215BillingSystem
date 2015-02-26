@@ -3,7 +3,9 @@ import java.text.SimpleDateFormat;
 
 
 /**
- *
+ * CM20215 Billing System Coursework
+ * @author Damask Talary-Brown
+ * @version 1.0
  */
 public class BillingSystem {
 
@@ -29,13 +31,6 @@ public class BillingSystem {
     private HashMap<Integer, Customer> customers = new HashMap<Integer, Customer>();
     // The date format accepted for I/O
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
-    /**
-     * Converts a given date from storage format into output format
-     * @param milliseconds
-     */
-    private String dateFormat(long milliseconds) {
-        return dateFormat.format(new Date(milliseconds));
-    }
 
     /**
      * Populates the billingSystem object with random customers and bookings, launches the main menu
@@ -169,8 +164,8 @@ public class BillingSystem {
                 Booking b = bEntry.getValue();
                 String id = String.valueOf(b.GetBookingID());
                 String name = sys.customerLookupByID(b.GetCustomerID()).GetCustomerName();
-                String checkIn = dateFormat(b.GetCheckInDate());
-                String checkOut = dateFormat(b.GetCheckOutDate());
+                String checkIn = BillingSystemUtils.dateFormat(b.GetCheckInDate());
+                String checkOut = BillingSystemUtils.dateFormat(b.GetCheckOutDate());
                 String bookingType = b.isGroupBooking()? "Group: "+ ((GroupBooking)b).getGroupSize() :
                         b.isCorporateBooking()? "Corp: "+ ((CorporateBooking)b).GetCompanyName() : "Individual";
                 String[] bookingData = new String[]{id, name, bookingType, checkIn, checkOut};
@@ -310,14 +305,14 @@ public class BillingSystem {
         Booking currentBooking = sys.allBookings.get(BookingID);
         // Amend check-in
         BillingSystemUtils.headingText("Current check-in date is " +
-                dateFormat(currentBooking.GetCheckInDate()));
+                BillingSystemUtils.dateFormat(currentBooking.GetCheckInDate()));
         System.out.println();
         long checkInDate = BillingSystemUtils.getDateInput("Enter new check-in date dd/mm/yy: ");
         currentBooking.EditCheckInDate(checkInDate);
 
         // Amend check-out
         BillingSystemUtils.headingText("Current check-out date is " +
-                dateFormat(currentBooking.GetCheckOutDate()));
+                BillingSystemUtils.dateFormat(currentBooking.GetCheckOutDate()));
         System.out.println();
         long checkOutDate = BillingSystemUtils.getDateInput("Enter new check-out date dd/mm/yy: ",
                 "Check-out must be a valid date after check-in",

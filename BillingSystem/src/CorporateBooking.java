@@ -2,11 +2,12 @@ import java.util.*;
 import java.math.BigDecimal;
 
 /**
- * 
+ * Class for instantiating corporate booking objects
  */
 public class CorporateBooking extends Booking {
 
     /**
+     * Constructs a new instance of CorporateBooking
      * @param BookingID
      * @param CompanyName
      * @param CustomerID
@@ -19,9 +20,6 @@ public class CorporateBooking extends Booking {
         this.CompanyName = CompanyName;
     }
 
-    /**
-     * 
-     */
     private String CompanyName;
 
 
@@ -44,9 +42,6 @@ public class CorporateBooking extends Booking {
         return this.BookingBill.PrintBill();
     }
 
-    public boolean isIndividualBooking() {
-        return false;
-    }
     public boolean isGroupBooking() {
         return false;
     }

@@ -3,11 +3,12 @@ import java.sql.Date;
 import java.math.BigDecimal;
 
 /**
- * 
+ * Class for instantiating group booking objects
  */
 public class GroupBooking extends Booking {
 
     /**
+     * Constructs a new instance of GroupBooking
      * @param BookingID
      * @param CustomerID
      * @param GroupSize
@@ -20,9 +21,6 @@ public class GroupBooking extends Booking {
         this.BookingBill = new GroupBill(this);
     }
 
-    /**
-     * 
-     */
     private int GroupSize;
 
 

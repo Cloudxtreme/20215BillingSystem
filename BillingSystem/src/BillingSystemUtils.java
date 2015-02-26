@@ -3,7 +3,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * Created by Damask on 19/02/15.
+ * Utility class BillingSystem objects - formatting, validation and I/O
  */
 public final class BillingSystemUtils {
 
@@ -51,6 +51,13 @@ public final class BillingSystemUtils {
 
     // The date format accepted for I/O
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
+    /**
+     * Converts a given date from storage format into output format
+     * @param milliseconds
+     */
+    public static String dateFormat(long milliseconds) {
+        return dateFormat.format(new Date(milliseconds));
+    }
 
 
     public static String padRight(String s, int column) {
@@ -171,13 +178,7 @@ public final class BillingSystemUtils {
         }
     }
 
-    /**
-     * Converts a given date from storage format into output format
-     * @param milliseconds
-     */
-    private static String dateFormat(long milliseconds) {
-        return dateFormat.format(new Date(milliseconds));
-    }
+
 
     public static void populateSystemData(BillingSystem sys) {
         Companies.add("Starbucks");

@@ -2,11 +2,12 @@ import java.util.*;
 import java.math.BigDecimal;
 
 /**
- * 
+ * Class for instantiating booking objects
  */
 public abstract class Booking {
 
     /**
+     * Constructs a new instance of Booking
      * @param BookingID
      * @param CustomerID
      * @param CheckInDate
@@ -17,7 +18,6 @@ public abstract class Booking {
         this.CustomerID = CustomerID;
         this.CheckInDate = CheckInDate;
         this.CheckOutDate = CheckOutDate;
-        //this.BookingCustomer.AddBooking(this);
     }
 
     protected int BookingID;
@@ -57,10 +57,6 @@ public abstract class Booking {
     /**
      * 
      */
-    public abstract ArrayList<String> GenerateBill();
-    /**
-     * 
-     */
     public int GetBookingID() {
         return this.BookingID;
     }
@@ -69,7 +65,7 @@ public abstract class Booking {
         return this.CustomerID;
     }
 
-    public abstract boolean isIndividualBooking();
+    public abstract ArrayList<String> GenerateBill();
     public abstract boolean isGroupBooking();
     public abstract boolean isCorporateBooking();
 }

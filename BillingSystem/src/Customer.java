@@ -4,11 +4,12 @@ import java.math.BigDecimal;
 import java.lang.IllegalArgumentException;
 
 /**
- * 
+ * Class for instantiating customer objects
  */
 public class Customer {
 
     /**
+     * Constructs a new instance of Customer
      * @param CustomerID
      * @param CustomerName
      */

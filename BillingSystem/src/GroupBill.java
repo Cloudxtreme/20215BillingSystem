@@ -4,30 +4,22 @@ import java.util.concurrent.TimeUnit;
 import java.util.GregorianCalendar;
 
 /**
- * 
+ * Class for instantiating group bill objects
  */
 public class GroupBill extends Bill {
 
     /**
-     * 
+     * Constructs a new instance of GroupBill from a GroupBooking
      */
-    public GroupBill(Booking BillBooking) {
+    public GroupBill(GroupBooking BillBooking) {
         super(BillBooking);
         this.GroupSize = ((GroupBooking)BillBooking).getGroupSize();
         adjustedRate = STANDARD_RATE.multiply(new BigDecimal(1 + GROUP_MULTIPLIER * (GroupSize-1)))
                 .setScale(2, BigDecimal.ROUND_CEILING);;
     }
 
-    /**
-     * 
-     */
     private static final float GROUP_MULTIPLIER = 0.1f;
-
-    /**
-     * 
-     */
     private int GroupSize;
-
     private BigDecimal adjustedRate;
 
     /**
