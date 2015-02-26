@@ -30,22 +30,14 @@ public abstract class Booking {
      * @param CheckInDate
      */
     public void EditCheckInDate(long CheckInDate) {
-        if (CheckInDate < this.CheckOutDate) {
             this.CheckInDate = CheckInDate;
-        } else {
-            throw new java.lang.IllegalArgumentException("Check-in date cannot be on or after check-out date.");
-        }
     }
 
     /**
      * @param CheckOutDate
      */
     public void EditCheckOutDate(long CheckOutDate) {
-        if (CheckOutDate > this.CheckInDate) {
             this.CheckOutDate = CheckOutDate;
-        } else {
-            throw new java.lang.IllegalArgumentException("Check-out date cannot be on or before check-in date.");
-        }
     }
 
     /**
