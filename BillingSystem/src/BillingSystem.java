@@ -12,27 +12,27 @@ public class BillingSystem {
      * Constructs a new instance of BillingSystem with no customers or bookings
      */
     public BillingSystem() {
-        BookingIDCount = 0;
-        CustomerIDCount = 0;
-        AllBookings = new HashMap<Integer, Booking>();
-        Customers = new HashMap<Integer, Customer>();
+        bookingIDCount = 0;
+        customerIDCount = 0;
+       allBookings = new HashMap<Integer, Booking>();
+       customers = new HashMap<Integer, Customer>();
     }
 
     // Instance variable for billing system
     private static BillingSystem sys = new BillingSystem();
     // Total number of past bookings
-    private static int BookingIDCount;
+    private static int bookingIDCount;
     // Total number of past customers
-    private static int CustomerIDCount;
+    private static int customerIDCount;
     // Every booking in the system
-    private HashMap<Integer, Booking> AllBookings = new HashMap<Integer, Booking>();
+    private HashMap<Integer, Booking> allBookings = new HashMap<Integer, Booking>();
     // Every customer in the system
-    private HashMap<Integer, Customer> Customers = new HashMap<Integer, Customer>();
+    private HashMap<Integer, Customer> customers = new HashMap<Integer, Customer>();
     // The date format accepted for I/O
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
 
     /**
-     * Constructs a new instance of BillingSystem with no customers or bookings
+     * Populates the billingSystem object with random customers and bookings, launches the main menu
      */
     public static void main(String[] args) {
         BillingSystemUtils.populateSystemData(sys);
@@ -42,47 +42,46 @@ public class BillingSystem {
     }
 
     /**
-     * Launches the main menu and waits for input
+     * Launches the main menu and waits for user input
      */
     public void mainMenu() {
         Scanner s = new Scanner(System.in);
         int menuChoice = 0;
         BillingSystemUtils.menu();
-        menuSelection(getIntInput(10, "Menu choice (1-9): ", "Invalid menu choice."));
+        menuSelection(getIntInput(9, "Menu choice (1-8): ", "Invalid menu choice."));
     }
 
     /**
      * Performs system actions based on the main menu choice the user made
-     * @param menuChoice The validated integer menu selection (0-9)
+     * @param menuChoice The validated integer menu selection (0-8)
      */
     public void menuSelection(int menuChoice) {
         switch (menuChoice) {
             case 1:
-                AddNewCustomer();
+                sys.AddNewCustomer();
                 break;
             case 2:
-                AddNewCustomer();
-                AddNewBooking(CustomerLookupByID(CustomerIDCount).GetCustomerID());
+                sys.AddNewCustomer();
+                AddNewBooking(CustomerLookupByID(customerIDCount).GetCustomerID());
                 break;
             case 3:
-                SelectBookingCustomer();
+                sys.SelectBookingCustomer();
                 break;
             case 4:
-                getAllBookings();
+                sys.getAllBookings();
                 break;
             case 5:
-                CustomerLookupByName();
+                sys.CustomerLookupByName();
                 break;
             case 6:
-                ManageBooking();
+                sys.ManageBooking();
                 break;
             case 7:
+                sys.GenerateBill();
                 break;
             case 8:
-                GenerateBill();
-                break;
-            case 9:
                 System.exit(0);
+                break;
         }
     }
 
@@ -94,9 +93,9 @@ public class BillingSystem {
      * @param CheckOutDate
      */
     public void AddNewBooking(int CustomerID, long CheckInDate, long CheckOutDate) {
-        IndividualBooking b = new IndividualBooking(++BookingIDCount, CustomerID, CheckInDate, CheckOutDate);
-        CustomerLookupByID(CustomerID).AddBooking(b);
-        AllBookings.put(b.GetBookingID(), b);
+        IndividualBooking b = new IndividualBooking(++bookingIDCount, CustomerID, CheckInDate, CheckOutDate);
+        sys.CustomerLookupByID(CustomerID).AddBooking(b);
+        sys.allBookings.put(b.GetBookingID(), b);
     }
 
     /**
@@ -107,9 +106,9 @@ public class BillingSystem {
      * @param CheckOutDate
      */
     public void AddNewBooking(String CompanyName, int CustomerID, long CheckInDate, long CheckOutDate) {
-        CorporateBooking b = new CorporateBooking(++BookingIDCount, CompanyName, CustomerID, CheckInDate, CheckOutDate);
-        CustomerLookupByID(CustomerID).AddBooking(b);
-        AllBookings.put(b.GetBookingID(), b);
+        CorporateBooking b = new CorporateBooking(++bookingIDCount, CompanyName, CustomerID, CheckInDate, CheckOutDate);
+        sys.CustomerLookupByID(CustomerID).AddBooking(b);
+        sys.allBookings.put(b.GetBookingID(), b);
     }
 
     /**
@@ -120,16 +119,16 @@ public class BillingSystem {
      * @param CheckOutDate
      */
     public void AddNewBooking(int CustomerID, int GroupSize, long CheckInDate, long CheckOutDate) {
-        GroupBooking b = new GroupBooking(++BookingIDCount, CustomerID, GroupSize, CheckInDate, CheckOutDate);
-        CustomerLookupByID(CustomerID).AddBooking(b);
-        AllBookings.put(b.GetBookingID(), b);
+        GroupBooking b = new GroupBooking(++bookingIDCount, CustomerID, GroupSize, CheckInDate, CheckOutDate);
+        sys.CustomerLookupByID(CustomerID).AddBooking(b);
+        sys.allBookings.put(b.GetBookingID(), b);
     }
 
     /**
      * Gets a user selected customer ID to create a booking for that customer
      */
     public void SelectBookingCustomer() {
-        ArrayList<Customer> results = CustomerLookupByName(getInput("Customer name: "));
+        ArrayList<Customer> results = sys.CustomerLookupByName(getInput("Customer name: "));
         if (results.size()==0) {
             BillingSystemUtils.confirmContinue("No customers found.");
         } else {
@@ -144,8 +143,8 @@ public class BillingSystem {
             }
             BillingSystemUtils.printTable(new String[]{"ID", "Customer", "Post Code"}, customerLines);
             BillingSystemUtils.confirmContinue();
-            int id = getIntInput(CustomerIDCount+1, "Enter customer ID to book: ", "Invalid customer ID.");
-            AddNewBooking(id);
+            int id = getIntInput(customerIDCount +1, "Enter customer ID to book: ", "Invalid customer ID.");
+            sys.AddNewBooking(id);
         }
     }
 
@@ -158,25 +157,24 @@ public class BillingSystem {
         long checkOutDate = getDateInput("Enter check-out date dd/mm/yy: ",
                 "Check-out must be a valid date after check-in",
                 Long.MAX_VALUE, checkInDate);
-
         int bookingType = getIntInput(4, "1:  Individual, 2: Group, 3: Corporate. ");
         switch (bookingType) {
             case 1:
-                AddNewBooking(CustomerID, checkInDate, checkOutDate);
+                sys.AddNewBooking(CustomerID, checkInDate, checkOutDate);
                 break;
             case 2:
                 int groupSize = getIntInput(6, "Enter group size: ", "Invalid group size (max 5).");
-                AddNewBooking(CustomerID, groupSize, checkInDate, checkOutDate);
+                sys.AddNewBooking(CustomerID, groupSize, checkInDate, checkOutDate);
                 break;
             case 3:
                 String CompanyName = getInput("Enter company name: ");
-                AddNewBooking(CompanyName, CustomerID, checkInDate, checkOutDate);
+                sys.AddNewBooking(CompanyName, CustomerID, checkInDate, checkOutDate);
                 break;
         }
     }
 
     public void EditBooking(int BookingID) {
-        Booking currentBooking = AllBookings.get(BookingID);
+        Booking currentBooking = sys.allBookings.get(BookingID);
         BillingSystemUtils.headingText("Current check-in date is " + dateFormat(currentBooking.GetCheckInDate()));
         System.out.println();
         long checkInDate = getDateInput("Enter new check-in date dd/mm/yy: ");
@@ -201,11 +199,11 @@ public class BillingSystem {
     }
 
     public int getCustomerIDCount() {
-        return CustomerIDCount;
+        return sys.customerIDCount;
     }
 
     private String dateFormat(long millis) {
-        return sdf.format(new Date(millis));
+        return dateFormat.format(new Date(millis));
     }
 
     public int getIntInput(int upperBound, String inputText) {
@@ -257,7 +255,7 @@ public class BillingSystem {
         while (true) {
             BillingSystemUtils.headingText(inputText);
             try {
-                input = sdf.parse(s.nextLine()).getTime();
+                input = dateFormat.parse(s.nextLine()).getTime();
                 if (input < before && input > after) {
                     BillingSystemUtils.clearConsole();
                     return input;
@@ -269,7 +267,7 @@ public class BillingSystem {
 
 
     public void GenerateBill(int bookingID) {
-        Booking b = BookingLookupByID(bookingID);
+        Booking b = sys.BookingLookupByID(bookingID);
         ArrayList<String> bill = b.GenerateBill();
         BillingSystemUtils.headingText("Billed: " + CustomerLookupByID(b.GetCustomerID()).GetCustomerName());
         for (String billLine: bill) {
@@ -279,7 +277,7 @@ public class BillingSystem {
     }
 
     public void GenerateBill() {
-        ArrayList<Customer> results = CustomerLookupByName(getInput("Customer name: "));
+        ArrayList<Customer> results = sys.CustomerLookupByName(getInput("Customer name: "));
         if (results.size()==0) {
             BillingSystemUtils.confirmContinue("No customers found");
         } else {
@@ -294,8 +292,8 @@ public class BillingSystem {
                 String postCode = c.GetCustomerPostCode();
                 for (Booking b: c.GetBookings()) {
                     String bookingID = String.valueOf(b.GetBookingID());
-                    String checkIn = sdf.format(new Date(b.GetCheckInDate()));
-                    String checkOut = sdf.format(new Date(b.GetCheckOutDate()));
+                    String checkIn = dateFormat.format(new Date(b.GetCheckInDate()));
+                    String checkOut = dateFormat.format(new Date(b.GetCheckOutDate()));
                     String bookingType = b.isGroupBooking()? "Group: "+ ((GroupBooking)b).getGroupSize() :
                             b.isCorporateBooking()? "Corp: "+ ((CorporateBooking)b).GetCompanyName() : "Individual";
                     String[] bookingData = new String[]{name, postCode, bookingID, bookingType, checkIn, checkOut};
@@ -305,8 +303,8 @@ public class BillingSystem {
             if (bookingCount > 0) {
                 BillingSystemUtils.printTable(
                         new String[]{"Customer", "Post Code", "Booking", "Type", "Check-In", "Check-Out"}, bookingLines);
-                int id = getIntInput(BookingIDCount+1, "Enter booking ID to generate bill: ", "Invalid booking ID.");
-                GenerateBill(id);
+                int id = getIntInput(bookingIDCount +1, "Enter booking ID to generate bill: ", "Invalid booking ID.");
+                sys.GenerateBill(id);
             }
         }
     }
@@ -317,12 +315,12 @@ public class BillingSystem {
      */
     public void RemoveBooking(int BookingID) {
         Booking b = BookingLookupByID(BookingID);
-        CustomerLookupByID(b.GetCustomerID()).RemoveBooking(b);
-        AllBookings.remove(BookingID);
+        sys.CustomerLookupByID(b.GetCustomerID()).RemoveBooking(b);
+        sys.allBookings.remove(BookingID);
     }
 
     public void ManageBooking() {
-        ArrayList<Customer> results = CustomerLookupByName(getInput("Customer name: "));
+        ArrayList<Customer> results = sys.CustomerLookupByName(getInput("Customer name: "));
         if (results.size()==0) {
             BillingSystemUtils.confirmContinue("No customers found");
         } else {
@@ -337,8 +335,8 @@ public class BillingSystem {
                 String postCode = c.GetCustomerPostCode();
                 for (Booking b: c.GetBookings()) {
                     String bookingID = String.valueOf(b.GetBookingID());
-                    String checkIn = sdf.format(new Date(b.GetCheckInDate()));
-                    String checkOut = sdf.format(new Date(b.GetCheckOutDate()));
+                    String checkIn = dateFormat.format(new Date(b.GetCheckInDate()));
+                    String checkOut = dateFormat.format(new Date(b.GetCheckOutDate()));
                     String bookingType = b.isGroupBooking()? "Group: "+ ((GroupBooking)b).getGroupSize() :
                             b.isCorporateBooking()? "Corp: "+ ((CorporateBooking)b).GetCompanyName() : "Individual";
                     String[] bookingData = new String[]{name, postCode, bookingID, bookingType, checkIn, checkOut};
@@ -348,7 +346,7 @@ public class BillingSystem {
             if (bookingCount > 0) {
                 BillingSystemUtils.printTable(
                         new String[]{"Customer", "Post Code", "Booking", "Type", "Check-In", "Check-Out"}, bookingLines);
-                int id = getIntInput(BookingIDCount+1, "Enter booking ID to edit it: ", "Invalid booking ID.");
+                int id = getIntInput(bookingIDCount +1, "Enter booking ID to edit it: ", "Invalid booking ID.");
                 int editOrRemove = getIntInput(3, "Enter 1 to edit booking or 2 to remove booking: ");
                 switch (editOrRemove) {
                     case 1:
@@ -373,8 +371,8 @@ public class BillingSystem {
      * @param CustomerName
      */
     public void AddNewCustomer(String CustomerName, String CustomerPhone, String CustomerAddress, String CustomerPostCode) {
-        Customer c = new Customer(++CustomerIDCount, CustomerName, CustomerPhone, CustomerAddress, CustomerPostCode);
-        Customers.put(c.GetCustomerID(), c);
+        Customer c = new Customer(++customerIDCount, CustomerName, CustomerPhone, CustomerAddress, CustomerPostCode);
+        sys.customers.put(c.GetCustomerID(), c);
     }
 
     public void AddNewCustomer() {
@@ -383,14 +381,14 @@ public class BillingSystem {
         customerPhone = getInput("Phone number: ");
         customerAddress = getInput("Street address and city: ");
         customerPostCode = getInput("Post/ZIP code: ");
-        AddNewCustomer(customerName, customerPhone, customerAddress, customerPostCode);
+        sys.AddNewCustomer(customerName, customerPhone, customerAddress, customerPostCode);
     }
 
     /**
      * @param CustomerID
      */
     public Customer CustomerLookupByID(int CustomerID) {
-        for(Map.Entry<Integer, Customer> c : Customers.entrySet()){
+        for(Map.Entry<Integer, Customer> c : sys.customers.entrySet()){
             if (c.getKey().equals(CustomerID)) {
                 return c.getValue();
             }
@@ -403,7 +401,7 @@ public class BillingSystem {
      */
     public ArrayList<Customer> CustomerLookupByName(String Name) {
         ArrayList<Customer> searchResults = new ArrayList<Customer>();
-        for(Map.Entry<Integer, Customer> c : Customers.entrySet()){
+        for(Map.Entry<Integer, Customer> c : sys.customers.entrySet()){
             if (c.getValue().GetCustomerName().toLowerCase().contains(Name.toLowerCase())) {
                 searchResults.add(c.getValue());
             }
@@ -412,7 +410,7 @@ public class BillingSystem {
     }
 
     public void CustomerLookupByName() {
-        ArrayList<Customer> results = CustomerLookupByName(getInput("Customer name: "));
+        ArrayList<Customer> results = sys.CustomerLookupByName(getInput("Customer name: "));
         Scanner s = new Scanner(System.in);
         BillingSystemUtils.clearConsole();
         if (results.size()==0) {
@@ -436,7 +434,7 @@ public class BillingSystem {
      * @param BookingID
      */
     public Booking BookingLookupByID(int BookingID) {
-        for(Map.Entry<Integer, Booking> b : AllBookings.entrySet()){
+        for(Map.Entry<Integer, Booking> b : sys.allBookings.entrySet()){
             if (b.getKey().equals(BookingID)) {
                 return b.getValue();
             }
@@ -446,16 +444,16 @@ public class BillingSystem {
 
     public void getAllBookings() {
         BillingSystemUtils.clearConsole();
-        if (AllBookings.size()==0) {
+        if (sys.allBookings.size()==0) {
             BillingSystemUtils.headingText("No bookings in the system.");
             new Scanner(System.in).nextLine();
         } else {
-            String[][] bookingLines = new String[AllBookings.size()][];
+            String[][] bookingLines = new String[sys.allBookings.size()][];
             int bookingCount = 0;
-            for (Map.Entry<Integer, Booking> bEntry: AllBookings.entrySet()) {
+            for (Map.Entry<Integer, Booking> bEntry: sys.allBookings.entrySet()) {
                 Booking b = bEntry.getValue();
                 String id = String.valueOf(b.GetBookingID());
-                String name = CustomerLookupByID(b.GetCustomerID()).GetCustomerName();
+                String name = sys.CustomerLookupByID(b.GetCustomerID()).GetCustomerName();
                 String checkIn = dateFormat(b.GetCheckInDate());
                 String checkOut = dateFormat(b.GetCheckOutDate());
                 String bookingType = b.isGroupBooking()? "Group: "+ ((GroupBooking)b).getGroupSize() :
@@ -472,7 +470,7 @@ public class BillingSystem {
      * @param CustomerID
      */
     public ArrayList<Booking> BookingLookupByCustomer(int CustomerID) {
-        for(Map.Entry<Integer, Customer> c : Customers.entrySet()){
+        for(Map.Entry<Integer, Customer> c : sys.customers.entrySet()){
             if (c.getKey().equals(CustomerID)) {
                 return c.getValue().GetBookings();
             }

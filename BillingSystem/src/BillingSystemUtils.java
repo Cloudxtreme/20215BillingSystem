@@ -19,17 +19,15 @@ public final class BillingSystemUtils {
             "╟───╫─────────────────────────────────────────────────────────────────────────╢\n" +
             "║ 3 ║ Create booking for existing customer                                    ║\n" +
             "╟───╫─────────────────────────────────────────────────────────────────────────╢\n" +
-            "║ 4 ║ Booking lookup (or view all bookings)                                   ║\n" +
+            "║ 4 ║ View all bookings                                                       ║\n" +
             "╟───╫─────────────────────────────────────────────────────────────────────────╢\n" +
-            "║ 5 ║ Customer search (or view all customers)                                 ║\n" +
+            "║ 5 ║ Customer lookup                                                         ║\n" +
             "╟───╫─────────────────────────────────────────────────────────────────────────╢\n" +
             "║ 6 ║ Manage bookings                                                         ║\n" +
             "╟───╫─────────────────────────────────────────────────────────────────────────╢\n" +
-            "║ 7 ║ Manage customers                                                        ║\n" +
+            "║ 7 ║ Generate bill                                                           ║\n" +
             "╟───╫─────────────────────────────────────────────────────────────────────────╢\n" +
-            "║ 8 ║ Generate bill                                                           ║\n" +
-            "╟───╫─────────────────────────────────────────────────────────────────────────╢\n" +
-            "║ 9 ║ Quit                                                                    ║\n" +
+            "║ 8 ║ Quit                                                                    ║\n" +
             "╚═══╩═════════════════════════════════════════════════════════════════════════╝\n";
 
     public static final String TITLE =
@@ -149,12 +147,15 @@ public final class BillingSystemUtils {
             checkOut = checkIn + randomStayLength();
             switch (bookingType) {
                 case 1:
+                    System.out.println("One!");
                     sys.AddNewBooking(customerID, checkIn, checkOut);
                     break;
                 case 2:
+                    System.out.println("Two!");
                     sys.AddNewBooking(customerID, randomGroupSize(), checkIn, checkOut);
                     break;
                 case 3:
+                    System.out.println("Three!");
                     sys.AddNewBooking(randomCompanyName(), customerID, checkIn, checkOut);
                     break;
             }
