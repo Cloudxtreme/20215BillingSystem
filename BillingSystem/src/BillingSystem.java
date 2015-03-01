@@ -46,8 +46,6 @@ public class BillingSystem {
      * Launches the main menu and waits for user input
      */
     public void mainMenu() {
-        Scanner s = new Scanner(System.in);
-        int menuChoice = 0;
         BillingSystemUtils.menu();
         menuSelection(BillingSystemUtils.getIntInput(9, "Menu choice (1-8): ", "Invalid menu choice."));
     }
@@ -210,14 +208,20 @@ public class BillingSystem {
         } else if (displayFilteredBookings(results) > 0) {
             int id = BillingSystemUtils.getIntInput(bookingIDCount + 1,
                     "Enter booking ID to edit it: ", "Invalid booking ID.");
-            int editOrRemove = BillingSystemUtils.getIntInput(3, "Enter 1 to edit booking or 2 to remove booking: ");
-            switch (editOrRemove) {
-                case 1:
-                    sys.editBooking(id);
-                    break;
-                case 2:
-                    sys.removeBooking(id);
-                    break;
+            if (allBookings.get(id) == null) {
+                BillingSystemUtils.confirmContinue("Booking does not exist or has been deleted.");
+                System.out.println();
+                return;
+            } else {
+                int editOrRemove = BillingSystemUtils.getIntInput(3, "Enter 1 to edit booking or 2 to remove booking: ");
+                switch (editOrRemove) {
+                    case 1:
+                        sys.editBooking(id);
+                        break;
+                    case 2:
+                        sys.removeBooking(id);
+                        break;
+                }
             }
         } else {
             BillingSystemUtils.confirmContinue("No bookings found for selected customer");
@@ -353,6 +357,11 @@ public class BillingSystem {
      */
     public void generateBill(int bookingID) {
         Booking b = sys.bookingLookupByID(bookingID);
+        if (b==null) {
+            BillingSystemUtils.confirmContinue("Booking does not exist or has been deleted.");
+            System.out.println();
+            return;
+        }
         ArrayList<String> bill = b.GenerateBill();
         BillingSystemUtils.headingText("Billed: " + customerLookupByID(b.GetCustomerID()).GetCustomerName());
         System.out.println();

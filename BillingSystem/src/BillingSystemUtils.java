@@ -7,8 +7,9 @@ import java.util.*;
  */
 public final class BillingSystemUtils {
 
+    // Scanner specifically for empty input when a 'hit return to continue' is required
     private static final Scanner pause = new Scanner(System.in);
-
+    // CLI representation of main menu options and I/O related things
     public static final String MENU_OPTIONS =
             "╔════════════════╗\n" +
             "║ Billing System ║\n" +
@@ -29,23 +30,21 @@ public final class BillingSystemUtils {
             "╟───╫─────────────────────────────────────────────────────────────────────────╢\n" +
             "║ 8 ║ Quit                                                                    ║\n" +
             "╚═══╩═════════════════════════════════════════════════════════════════════════╝\n";
-
     public static final String TITLE =
             "╔════════════════╗\n" +
             "║ Billing System ║\n" +
             "╚════════════════╝";
-
     public static final String PROMPT =
             "╔╦════════════════════════════════════════════════════════════════════════════╗\n" +
             "║║ ";
-
     public static final String LINE_START = "║║ ";
+
 
     public static final String CONT_MESSAGE = "Hit return to continue.";
     public static final String DEFAULT_ERR = "Invalid entry.";
 
     // Instance of random for populating the data set
-    private static Random r = new Random();
+    private static Random randomNum = new Random();
     // List of Companies for data generation
     private static ArrayList<String> Companies = new ArrayList<String>();
 
@@ -59,11 +58,21 @@ public final class BillingSystemUtils {
         return dateFormat.format(new Date(milliseconds));
     }
 
-
-    public static String padRight(String s, int column) {
-        return String.format("%1$-" + column + "s", s);
+    /**
+     * Returns a string padded with whitespace to the specified number of characters
+     * @param text
+     * @param column
+     */
+    public static String padRight(String text, int column) {
+        return String.format("%1$-" + column + "s", text);
     }
 
+
+    /**
+     * Prints a formatted column-aligned table from headings[] and cells[][]
+     * @param headings
+     * @param cells
+     */
     public static void printTable(String[] headings, String[][] cells) {
         int cols = headings.length;
         int colSizes[] = new int[cols];
@@ -85,39 +94,66 @@ public final class BillingSystemUtils {
             for (int i = 0; i < headings.length; i++) {
                 System.out.print(padRight(cells[j][i],colSizes[i]+2));
             }
-            System.out.println();
+            System.out.print("\n");
         }
     }
 
+    /**
+     * Clears the console with an escape sequence
+     */
     public static void clearConsole() {
         System.out.print(String.format("\033[2J"));
         System.out.println(TITLE);
 
     }
 
+    /**
+     * Clears the console and prints the menu options
+     */
     public static void menu() {
         System.out.print(String.format("\033[2J"));
         System.out.println(MENU_OPTIONS);
     }
 
+    /**
+     * Prompts the user to hit return and waits for the return key to continue
+     */
     public static void confirmContinue() {
         System.out.println(PROMPT + CONT_MESSAGE);
         pause.nextLine();
     }
 
+    /**
+     * Prompts the user with a custom message and waits to continue
+     * @param message
+     */
     public static void confirmContinue(String message) {
         System.out.println(PROMPT + message + " - " + CONT_MESSAGE);
         pause.nextLine();
     }
 
+    /**
+     * Prints formatted heading text to the console
+     * @param message
+     */
     public static void headingText(String message) {
         System.out.print(PROMPT + message);
     }
 
+    /**
+     * Prints formatted body text (no top rule) to the console
+     * @param message
+     */
     public static void bodyText(String message) {
         System.out.print(LINE_START + message);
     }
 
+    /**
+     * Returns validated integer below the upper bound
+     * @param upperBound
+     * @param inputText
+     * @param errorText
+     */
     public static int getIntInput(int upperBound, String inputText, String errorText) {
         int input;
         Scanner s = new Scanner(System.in);
@@ -135,14 +171,29 @@ public final class BillingSystemUtils {
         }
     }
 
+    /**
+     * Returns validated integer below the upper bound
+     * @param upperBound
+     * @param inputText
+     * @param errorText
+     */
     public static int getIntInput(int upperBound, String inputText) {
         return getIntInput(upperBound, inputText, BillingSystemUtils.DEFAULT_ERR);
     }
 
+    /**
+     * Returns validated string (not empty)
+     * @param inputText
+     */
     public static String getInput(String inputText) {
         return getInput(inputText, BillingSystemUtils.DEFAULT_ERR);
     }
 
+    /**
+     * Returns validated string
+     * @param inputText
+     * @param errorText
+     */
     public static String getInput(String inputText, String errorText) {
         String input;
         Scanner s = new Scanner(System.in);
@@ -157,11 +208,21 @@ public final class BillingSystemUtils {
         }
     }
 
+    /**
+     * Returns validated date (after 1/1/1970 and before the maximum date Long supports)
+     * @param inputText
+     */
     public static long getDateInput(String inputText) {
         return getDateInput(inputText, BillingSystemUtils.DEFAULT_ERR, Long.MAX_VALUE, 0l);
     }
 
-
+    /**
+     * Returns validated date in the date range specified by before-after (exclusive)
+     * @param before
+     * @param after
+     * @param inputText
+     * @param errorText
+     */
     public static long getDateInput(String inputText, String errorText, long before, long after) {
         long input;
         Scanner s = new Scanner(System.in);
@@ -179,7 +240,10 @@ public final class BillingSystemUtils {
     }
 
 
-
+    /**
+     * Populates the system with customers and random bookings
+     * @param sys
+     */
     public static void populateSystemData(BillingSystem sys) {
         Companies.add("Starbucks");
         Companies.add("Costa");
@@ -211,8 +275,8 @@ public final class BillingSystemUtils {
         sys.addNewCustomer("Judith Reilly", "08390 478150", "67 South Avenue, Broxburn, West Lothian", "I48 3MM");
         int CustomerIDCount = sys.getCustomerIDCount();
         for (int i=0; i<2*CustomerIDCount; i++) {
-            int customerID = r.nextInt(CustomerIDCount)+1;
-            int bookingType = r.nextInt(3)+1;
+            int customerID = randomNum.nextInt(CustomerIDCount)+1;
+            int bookingType = randomNum.nextInt(3)+1;
             long checkIn, checkOut;
             checkIn = dateGenerate();
             checkOut = checkIn + randomStayLength();
@@ -230,16 +294,31 @@ public final class BillingSystemUtils {
         }
     }
 
+    /**
+     * Returns a randomly generated date after the current time
+     */
     private static long dateGenerate() {
-        return System.currentTimeMillis() + r.nextInt(262800000)*10 - 2628000000l;
+        return System.currentTimeMillis() + randomNum.nextInt(262800000)*10 - 2628000000l;
     }
+
+    /**
+     * Returns a random feasible stay length
+     */
     private static long randomStayLength() {
-        return 86400000 * (r.nextInt(14)+1);
+        return 86400000 * (randomNum.nextInt(14)+1);
     }
+
+    /**
+     * Returns a randomly feasible group size
+     */
     private static int randomGroupSize() {
-        return r.nextInt(4)+2;
+        return randomNum.nextInt(4)+2;
     }
+
+    /**
+     * Returns a random company name
+     */
     private static String randomCompanyName() {
-        return Companies.get(r.nextInt(Companies.size()));
+        return Companies.get(randomNum.nextInt(Companies.size()));
     }
 }
