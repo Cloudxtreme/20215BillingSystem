@@ -1,8 +1,6 @@
-import java.util.*;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-import java.util.GregorianCalendar;
 
 
 /**
@@ -19,7 +17,7 @@ public class Bill {
         this.CheckOutDate = BillBooking.GetCheckOutDate();
     }
 
-    protected static final BigDecimal STANDARD_RATE = new BigDecimal("100.00").setScale(2, BigDecimal.ROUND_CEILING);
+    protected static final BigDecimal STANDARD_RATE = new BigDecimal("100.00").setScale(2,BigDecimal.ROUND_HALF_EVEN);
     protected BigDecimal TotalBill;
     protected Booking BillBooking;
     protected long CheckInDate;
@@ -33,7 +31,7 @@ public class Bill {
     public void CalculateBill() {
         DaysStayed = (int)TimeUnit.MILLISECONDS.toDays(CheckOutDate - CheckInDate);
         TotalBill = STANDARD_RATE.multiply(new BigDecimal(DaysStayed));
-        TotalBill.setScale(2,BigDecimal.ROUND_CEILING);
+        TotalBill.setScale(2,BigDecimal.ROUND_HALF_EVEN);
     }
 
     public ArrayList<String> PrintBill() {

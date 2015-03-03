@@ -1,6 +1,4 @@
-import java.util.*;
-import java.sql.Date;
-import java.math.BigDecimal;
+import java.util.ArrayList;
 
 /**
  * Class for instantiating group booking objects

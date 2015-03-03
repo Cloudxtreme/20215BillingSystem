@@ -1,5 +1,7 @@
-import java.util.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 
@@ -20,9 +22,9 @@ public class CorporateBill extends Bill {
     private static final float WEEKEND_MULTIPLIER = 0.5f;
     private int WeekendDays;
     private static final BigDecimal WEEKDAY_RATE = STANDARD_RATE.multiply(new BigDecimal(1 - CORPORATE_MULTIPLIER))
-            .setScale(2,BigDecimal.ROUND_FLOOR);
+            .setScale(2,BigDecimal.ROUND_HALF_EVEN);
     private static final BigDecimal WEEKEND_RATE = STANDARD_RATE.multiply(new BigDecimal(1 - WEEKEND_MULTIPLIER))
-            .setScale(2,BigDecimal.ROUND_FLOOR);
+            .setScale(2,BigDecimal.ROUND_HALF_EVEN);
     BigDecimal weekdayBill;
     BigDecimal weekendBill;
 

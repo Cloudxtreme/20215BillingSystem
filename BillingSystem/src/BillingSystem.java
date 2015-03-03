@@ -1,5 +1,5 @@
-import java.util.*;
 import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 /**
@@ -46,8 +46,13 @@ public class BillingSystem {
      * Launches the main menu and waits for user input
      */
     public void mainMenu() {
-        BillingSystemUtils.menu();
-        menuSelection(BillingSystemUtils.getIntInput(9, "Menu choice (1-8): ", "Invalid menu choice."));
+        try {
+            BillingSystemUtils.menu();
+            menuSelection(BillingSystemUtils.getIntInput(9, "Menu choice (1-8): ", "Invalid menu choice."));
+        } catch (java.util.NoSuchElementException e) {
+            // die gracefully if the user quit with ctrl-d
+            System.exit(0);
+        }
     }
 
     /**
@@ -90,6 +95,7 @@ public class BillingSystem {
      * Gets user inputted customer details to create a new customer
      */
     public void newCustomer() {
+        BillingSystemUtils.clearConsole();
         String customerName, customerPhone, customerAddress, customerPostCode;
         customerName = BillingSystemUtils.getInput("Customer name: ");
         customerPhone = BillingSystemUtils.getInput("Phone number: ");
@@ -103,6 +109,7 @@ public class BillingSystem {
      * @param CustomerID
      */
     public void addNewBooking(int CustomerID) {
+        BillingSystemUtils.clearConsole();
         long checkInDate = BillingSystemUtils.getDateInput("Enter check-in date dd/mm/yy: ");
         long checkOutDate = BillingSystemUtils.getDateInput("Enter check-out date dd/mm/yy: ",
                 "Check-out must be a valid date after check-in",
@@ -127,6 +134,7 @@ public class BillingSystem {
      * Gets a user selected customer to create a booking for that customer
      */
     public void selectBookingCustomer() {
+        BillingSystemUtils.clearConsole();
         ArrayList<Customer> results = sys.customerLookupByName(BillingSystemUtils.getInput("Customer name: "));
         if (results.size()==0) {
             BillingSystemUtils.confirmContinue("No customers found.");
@@ -178,6 +186,7 @@ public class BillingSystem {
      * Gets a (name) search term from the user and prints a list of matching customer records
      */
     public void customerSearch() {
+        BillingSystemUtils.clearConsole();
         ArrayList<Customer> results = sys.customerLookupByName(BillingSystemUtils.getInput("Customer name: "));
         Scanner s = new Scanner(System.in);
         BillingSystemUtils.clearConsole();
@@ -202,6 +211,7 @@ public class BillingSystem {
      * Allows a user edit or delete a booking for a specific customer
      */
     public void manageBooking() {
+        BillingSystemUtils.clearConsole();
         ArrayList<Customer> results = sys.customerLookupByName(BillingSystemUtils.getInput("Customer name: "));
         if (results.size() == 0) {
             BillingSystemUtils.confirmContinue("No customers found");
@@ -232,6 +242,7 @@ public class BillingSystem {
      * Allows a user to generate/print a bill for a specific customer
      */
     public void printBill() {
+        BillingSystemUtils.clearConsole();
         ArrayList<Customer> results = sys.customerLookupByName(BillingSystemUtils.getInput("Customer name: "));
         if (results.size()==0) {
             BillingSystemUtils.confirmContinue("No customers found");

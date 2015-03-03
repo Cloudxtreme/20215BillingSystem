@@ -1,7 +1,4 @@
-import java.util.*;
-import java.sql.Date;
-import java.math.BigDecimal;
-import java.lang.IllegalArgumentException;
+import java.util.ArrayList;
 
 /**
  * Class for instantiating customer objects

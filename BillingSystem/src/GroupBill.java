@@ -1,7 +1,6 @@
-import java.util.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-import java.util.GregorianCalendar;
 
 /**
  * Class for instantiating group bill objects
@@ -14,8 +13,7 @@ public class GroupBill extends Bill {
     public GroupBill(GroupBooking BillBooking) {
         super(BillBooking);
         this.GroupSize = ((GroupBooking)BillBooking).getGroupSize();
-        adjustedRate = STANDARD_RATE.multiply(new BigDecimal(1 + GROUP_MULTIPLIER * (GroupSize-1)))
-                .setScale(2, BigDecimal.ROUND_CEILING);;
+        adjustedRate = STANDARD_RATE.multiply(new BigDecimal(1 + GROUP_MULTIPLIER * (GroupSize-1))).setScale(2,BigDecimal.ROUND_HALF_EVEN);
     }
 
     private static final float GROUP_MULTIPLIER = 0.1f;
@@ -28,7 +26,7 @@ public class GroupBill extends Bill {
     @Override
     public void CalculateBill() {
         DaysStayed = (int) TimeUnit.MILLISECONDS.toDays(CheckOutDate - CheckInDate);
-        TotalBill = adjustedRate.multiply(new BigDecimal(DaysStayed));
+        TotalBill = adjustedRate.multiply(new BigDecimal(DaysStayed)).setScale(2,BigDecimal.ROUND_HALF_EVEN);
     }
 
     @Override

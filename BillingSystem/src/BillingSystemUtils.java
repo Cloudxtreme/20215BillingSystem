@@ -4,6 +4,7 @@ import java.util.*;
 
 /**
  * Utility class BillingSystem objects - formatting, validation and I/O
+ * Known errors: getInput methods will not work/validate correctly unless a new scanner object is created every time
  */
 public final class BillingSystemUtils {
 
@@ -156,14 +157,11 @@ public final class BillingSystemUtils {
      */
     public static int getIntInput(int upperBound, String inputText, String errorText) {
         int input;
-        Scanner s = new Scanner(System.in);
         while (true) {
             BillingSystemUtils.headingText(inputText);
             try {
-                input = s.nextInt();
-                s.nextLine();
+                input = new Scanner(System.in).nextInt();
                 if (input < upperBound && input > 0) {
-                    BillingSystemUtils.clearConsole();
                     return input;
                 }
             } catch (InputMismatchException e) {}
@@ -175,7 +173,6 @@ public final class BillingSystemUtils {
      * Returns validated integer below the upper bound
      * @param upperBound
      * @param inputText
-     * @param errorText
      */
     public static int getIntInput(int upperBound, String inputText) {
         return getIntInput(upperBound, inputText, BillingSystemUtils.DEFAULT_ERR);
@@ -196,14 +193,13 @@ public final class BillingSystemUtils {
      */
     public static String getInput(String inputText, String errorText) {
         String input;
-        Scanner s = new Scanner(System.in);
         while (true) {
             BillingSystemUtils.headingText(inputText);
-            input = s.nextLine();
+            input = new Scanner(System.in).nextLine();
             if (input.length() > 0) {
-                BillingSystemUtils.clearConsole();
                 return input;
             }
+            System.out.println();
             BillingSystemUtils.confirmContinue(errorText);
         }
     }
@@ -225,16 +221,16 @@ public final class BillingSystemUtils {
      */
     public static long getDateInput(String inputText, String errorText, long before, long after) {
         long input;
-        Scanner s = new Scanner(System.in);
         while (true) {
             BillingSystemUtils.headingText(inputText);
             try {
-                input = dateFormat.parse(s.nextLine()).getTime();
+                input = dateFormat.parse(new Scanner(System.in).nextLine()).getTime();
                 if (input < before && input > after) {
-                    BillingSystemUtils.clearConsole();
+                    System.out.println(input);
                     return input;
                 }
             } catch (ParseException e) {}
+            catch (InputMismatchException e) {}
             BillingSystemUtils.confirmContinue(errorText);
         }
     }
