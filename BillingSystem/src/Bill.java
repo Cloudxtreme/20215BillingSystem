@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 public class Bill {
 
     /**
-     * Constructs a new instance of Bill from a Booking
+     * Constructs a new instance of Bill
      */
     public Bill(Booking BillBooking) {
         this.BillBooking = BillBooking;
